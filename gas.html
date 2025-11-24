@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tarcart – Local Gas Prices</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { margin: 0; padding: 1.5rem; background: #020617; color: #e5e7eb; }
+    h1 { font-size: 1.6rem; margin-bottom: 0.25rem; }
+    h2 { font-size: 1.1rem; margin: 1rem 0 0.5rem; }
+    p { margin: 0.25rem 0 0.35rem; }
+    .subtext { color: #9ca3af; font-size: 0.85rem; }
+    a { color: #38bdf8; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .layout { display: grid; gap: 1rem; margin-top: 1rem; }
+    @media (min-width: 900px) {
+      .layout { grid-template-columns: 1.4fr 1fr; align-items: flex-start; }
+    }
+    .card {
+      background: rgba(15, 23, 42, 0.96);
+      border-radius: 0.75rem;
+      padding: 1rem 1.2rem 1.2rem;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.8);
+    }
+    .card-header { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .badge { font-size: 0.7rem; padding: 0.15rem 0.45rem; border-radius: 999px; border: 1px solid rgba(148, 163, 184, 0.5); color: #9ca3af; }
+    .stations { margin-top: 0.5rem; }
+    .station {
+      padding: 0.6rem 0.5rem;
+      border-bottom: 1px dashed rgba(51, 65, 85, 0.8);
+      display: grid;
+      grid-template-columns: 1.5fr 1.3fr 0.8fr;
+      gap: 0.5rem;
+      align-items: center;
+      font-size: 0.85rem;
+    }
+    .station:last-child { border-bottom: none; }
+    .station-name { font-weight: 600; color: #e5e7eb; }
+    .station-address { color: #9ca3af; font-size: 0.75rem; }
+    .pill { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.1rem 0.45rem; border-radius: 999px; border: 1px solid rgba(148, 163, 184, 0.5); font-size: 0.7rem; color: #9ca3af; margin-right: 0.25rem; margin-bottom: 0.15rem; }
+    .price-chip { font-weight: 600; color: #22c55e; }
+    .updated { color: #6b7280; font-size: 0.7rem; }
+    label { display: block; font-size: 0.8rem; margin-bottom: 0.2rem; color: #cbd5f5; }
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%;
+      padding: 0.45rem 0.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.9);
+      color: #f9fafb;
+      font-size: 0.85rem;
+    }
+    textarea { resize: vertical; min-height: 70px; }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #22c55e;
+      box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.5);
+    }
+    .field-group { margin-bottom: 0.6rem; }
+    small { font-size: 0.75rem; color: #9ca3af; }
+    .btn-row { display: flex; justify-content: flex-end; margin-top: 0.6rem; }
+    .btn {
+      border-radius: 999px;
+      padding: 0.4rem 0.9rem;
+      font-size: 0.85rem;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #022c22;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(34, 197, 94, 0.45);
+    }
+    .btn:hover { filter: brightness(1.05); }
+    .muted { color: #6b7280; font-size: 0.75rem; }
+    .divider { height: 1px; background: radial-gradient(circle, rgba(148,163,184,0.6), transparent); margin: 0.75rem 0; }
+    .nav { margin-bottom: 0.75rem; font-size: 0.85rem; }
+    .nav a { margin-right: 0.75rem; }
+  </style>
+</head>
+<body>
+  <h1>Tarcart – Local Gas Prices</h1>
+  <p class="subtext">
+    Live view of prices at <strong>Shields</strong> and nearby stations. Community can submit updates below.
+  </p>
+
+  <div class="nav">
+    <a href="index.html">← Back to Daily Profit Calculator</a>
+  </div>
+
+  <div class="layout">
+    <!-- LEFT: Station list -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h2>Stations Near You</h2>
+          <div class="subtext">Includes Shields + competitors within your chosen radius.</div>
+        </div>
+        <span class="badge">Read only (for now)</span>
+      </div>
+
+      <div class="stations" id="stationList"></div>
+
+      <p class="muted">
+        Prices are estimates and may change. Last updated times reflect the latest community report or manual update.
+      </p>
+    </div>
+
+    <!-- RIGHT: Submission form -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h2>Submit a Price Update</h2>
+          <div class="subtext">Help keep prices fresh for Shields and nearby stations.</div>
+        </div>
+        <span class="badge">Community</span>
+      </div>
+
+      <form id="priceForm">
+        <div class="field-group">
+          <label for="stationSelect">Station</label>
+          <select id="stationSelect">
+            <!-- Options filled by JS -->
+          </select>
+          <small>Select a station or choose "Other".</small>
+        </div>
+
+        <div class="field-group" id="otherStationGroup" style="display:none;">
+          <label for="otherStationName">If "Other", station name</label>
+          <input type="text" id="otherStationName" placeholder="Example: New Fuel Mart">
+        </div>
+
+        <div class="field-group">
+          <label for="stationAddress">Station Address</label>
+          <input type="text" id="stationAddress" placeholder="Street, City, State">
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="field-group">
+          <label for="grade">Fuel Grade</label>
+          <select id="grade">
+            <option value="87">Regular 87</option>
+            <option value="89">Midgrade 89</option>
+            <option value="93">Premium 93</option>
+            <option value="diesel">Diesel</option>
+            <option value="multiple">Multiple grades (add details below)</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label for="pricePerGal">Price per Gallon (USD)</label>
+          <input type="number" id="pricePerGal" step="0.001" placeholder="3.259">
+        </div>
+
+        <div class="field-group">
+          <label for="notes">Notes (optional)</label>
+          <textarea id="notes" placeholder="Example: Cash price only, or: matched Shell across the street."></textarea>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="field-group">
+          <label for="submitterName">Your Name (optional)</label>
+          <input type="text" id="submitterName" placeholder="Just first name or initials is fine">
+        </div>
+
+        <div class="btn-row">
+          <button type="submit" class="btn">Open Email to Send Update</button>
+        </div>
+
+        <p class="muted" style="margin-top:0.45rem;">
+          For now, Tarcart sends price updates to an email inbox. In a later version, these will go directly into the Tarcart database and update instantly.
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // TODO: Replace these with your real stations & locations.
+    // Shields should be first.
+    const stations = [
+      {
+        id: "shields",
+        name: "Shields",
+        brand: "Shields",
+        address: "12300 Biscayne Blvd, North Miami Beach, FL 33141",
+        isHome: true,
+        prices: {
+          "87": 3.259,
+          "89": 3.559,
+          "93": 3.859,
+          "diesel": 3.999
+        },
+        lastUpdated: "Owner update – today"
+      },
+      {
+        id: "Exxon By Bagel Easty",
+        name: "Exxon",
+        brand: "Exxon",
+        address: "1900 NE 123rd St, North Miami, FL 33181",
+        isHome: false,
+        prices: {
+          "87": 3.299,
+          "89": 3.599,
+          "93": 3.899
+        },
+        lastUpdated: "Community report – 2 hours ago"
+      },
+      {
+        id: "Chevron - Going To Bal Harbor",
+        name: "Chevron",
+        brand: "BP",
+        address: "1501 Broad Cswy, Bay Harbor Islands, FL 33154",
+        isHome: false,
+        prices: {
+          "87": 3.279,
+          "diesel": 4.059
+        },
+        lastUpdated: "Community report – yesterday"
+      },
+      {
+        id: "7-Eleven North Miami",
+        name: "7 Eleven",
+        brand: "7 Eleven",
+        address: "11885 Biscayne Blvd, North Miami, FL 33181",
+        isHome: false,
+        prices: {
+          "87": 3.279,
+          "diesel": 4.059
+        },
+        lastUpdated: "Community report – yesterday"
+      },
+      {
+        id: "Speedway - With Car Wash",
+        name: "Speedway",
+        brand: "Speedway",
+        address: "11401 Biscayne Blvd, North Miami, FL 33181",
+        isHome: false,
+        prices: {
+          "87": 3.279,
+          "diesel": 4.059
+        },
+        lastUpdated: "Community report – yesterday"
+      },
+      {
+        id: "Mobil - By Aldis",
+        name: "Mobil",
+        brand: "Mobil",
+        address: "11101 Biscayne Blvd, Miami, FL 33181",
+        isHome: false,
+        prices: {
+          "87": 3.279,
+          "diesel": 4.059
+        },
+        lastUpdated: "Community report – yesterday"
+      },
+      {
+        id: "Chevron - By Aldis",
+        name: "Chevron",
+        brand: "Chevron",
+        address: "10701 Biscayne Blvd, Miami, FL 33161",
+        isHome: false,
+        prices: {
+          "87": 3.279,
+          "diesel": 4.059
+        },
+        lastUpdated: "Community report – yesterday"
+      },
+      {
+        id: "Mobil - Expensive One By Dixie HWY",
+        name: "Mobil",
+        brand: "Mobil",
+        address: "12505 W Dixie Hwy, Miami, FL 33161",
+        isHome: false,
+        prices: {
+          "87": 3.279,
+          "diesel": 4.059
+        },
+        lastUpdated: "Community report – yesterday"
+      },
+      {
+        id: "Marathon - In Da Hood",
+        name: "Mobil",
+        brand: "Mobil",
+        address: "14725 W Dixie Hwy, North Miami, FL 33181",
+        isHome: false,
+        prices: {
+          "87": 3.279,
+          "diesel": 4.059
+        },
+        lastUpdated: "Community report – yesterday"
+      },
+      {
+        id: "Costco Wholesale",
+        name: "Costco",
+        brand: "Costco",
+        address: "14800 Sole Mia Way, North Miami, FL 33181",
+        isHome: false,
+        prices: {
+          "87": 3.279,
+          "diesel": 4.059
+        },
+        lastUpdated: "Community report – yesterday"
+      },
+      {
+        id: "Chevron North Miami - With Carwash",
+        name: "Chevron",
+        brand: "Chevron",
+        address: "13005 Biscayne Blvd, North Miami, FL 33181",
+        isHome: false,
+        prices: {
+          "87": 3.279,
+          "diesel": 4.059
+        },
+        lastUpdated: "Community report – yesterday"
+      },
+      {
+        id: "Marathon Gas - Across From Publix",
+        name: "Marathon",
+        brand: "Marathon",
+        address: "12995 Biscayne Blvd, North Miami, FL 33181",
+        isHome: false,
+        prices: {
+          "87": 3.279,
+          "diesel": 4.059
+        },
+        lastUpdated: "Community report – yesterday"
+      }
+      ];
+
+    const fuelLabels = {
+      "87": "Regular 87",
+      "89": "Midgrade 89",
+      "93": "Premium 93",
+      "diesel": "Diesel"
+    };
+
+    const stationListEl = document.getElementById("stationList");
+    const stationSelectEl = document.getElementById("stationSelect");
+    const otherStationGroupEl = document.getElementById("otherStationGroup");
+    const priceFormEl = document.getElementById("priceForm");
+
+    function renderStations() {
+      stationListEl.innerHTML = "";
+      stations.forEach((st) => {
+        const row = document.createElement("div");
+        row.className = "station";
+
+        const left = document.createElement("div");
+        left.innerHTML = `
+          <div class="station-name">
+            ${st.name} ${st.isHome ? '<span class="badge">Shields</span>' : ""}
+          </div>
+          <div class="station-address">${st.address}</div>
+        `;
+
+        const middle = document.createElement("div");
+        Object.keys(st.prices).forEach((grade) => {
+          const pill = document.createElement("span");
+          pill.className = "pill";
+          pill.innerHTML = `
+            <span>${fuelLabels[grade] || grade}</span>
+            <span class="price-chip">$${st.prices[grade].toFixed(3)}</span>
+          `;
+          middle.appendChild(pill);
+        });
+
+        const right = document.createElement("div");
+        right.innerHTML = `<div class="updated">${st.lastUpdated}</div>`;
+
+        row.appendChild(left);
+        row.appendChild(middle);
+        row.appendChild(right);
+        stationListEl.appendChild(row);
+      });
+    }
+
+    function renderStationSelect() {
+      stationSelectEl.innerHTML = "";
+      stations.forEach((st) => {
+        const opt = document.createElement("option");
+        opt.value = st.id;
+        opt.textContent = st.isHome ? `${st.name} (Shields)` : st.name;
+        stationSelectEl.appendChild(opt);
+      });
+      const otherOpt = document.createElement("option");
+      otherOpt.value = "other";
+      otherOpt.textContent = "Other station (not listed)";
+      stationSelectEl.appendChild(otherOpt);
+    }
+
+    stationSelectEl.addEventListener("change", () => {
+      const value = stationSelectEl.value;
+      if (value === "other") {
+        otherStationGroupEl.style.display = "block";
+      } else {
+        otherStationGroupEl.style.display = "none";
+        const st = stations.find(s => s.id === value);
+        if (st) {
+          document.getElementById("stationAddress").value = st.address;
+        }
+      }
+    });
+
+    priceFormEl.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const selectedId = stationSelectEl.value;
+      const selectedStation = stations.find(s => s.id === selectedId);
+      const otherName = document.getElementById("otherStationName").value.trim();
+      const address = document.getElementById("stationAddress").value.trim();
+      const grade = document.getElementById("grade").value;
+      const price = document.getElementById("pricePerGal").value.trim();
+      const notes = document.getElementById("notes").value.trim();
+      const submitterName = document.getElementById("submitterName").value.trim();
+
+      const stationName = selectedId === "other"
+        ? (otherName || "Other / unknown station")
+        : (selectedStation ? selectedStation.name : "Unknown station");
+
+      const gradeLabel = grade === "multiple"
+        ? "Multiple grades (see notes)"
+        : (fuelLabels[grade] || grade);
+
+      let bodyLines = [];
+      bodyLines.push(`Station: ${stationName}`);
+      bodyLines.push(`Address: ${address || "(not provided)"}`);
+      bodyLines.push("");
+      bodyLines.push(`Grade: ${gradeLabel}`);
+      bodyLines.push(`Price per gallon: ${price || "(not provided)"}`);
+      bodyLines.push("");
+      bodyLines.push(`Notes: ${notes || "(none)"}`);
+      bodyLines.push("");
+      bodyLines.push(`Submitted by: ${submitterName || "Anonymous"}`);
+      bodyLines.push(`Submitted via: Tarcart gas prices page`);
+
+      const subject = encodeURIComponent(`Gas price update – ${stationName}`);
+      const body = encodeURIComponent(bodyLines.join("\n"));
+
+      // TODO: replace this email with the inbox you want to receive updates at.
+      const toEmail = "garland@tarcart.com";
+
+      const mailto = `mailto:${toEmail}?subject=${subject}&body=${body}`;
+      window.location.href = mailto;
+    });
+
+    // Initial render
+    renderStations();
+    renderStationSelect();
+    stationSelectEl.dispatchEvent(new Event("change"));
+  </script>
+</body>
+</html>
