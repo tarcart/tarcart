@@ -623,7 +623,7 @@
   <script
     async
     defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApe83XPa6MNovCFytBZv0TICBqed7lPI8&callback=tarcartGoogleMapsInit"
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY_HERE&callback=tarcartGoogleMapsInit"
   ></script>
 </head>
 
@@ -1001,6 +1001,10 @@
         leafletMap = null;
       }
 
+      const isOwner =
+        (station.name || "").toLowerCase().includes(HOME_STATION_KEYWORD) ||
+        station.verified_owner === true;
+
       leafletMap = L.map(mapContainer).setView([coords.lat, coords.lon], 16);
 
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -1009,7 +1013,18 @@
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       }).addTo(leafletMap);
 
-      L.marker([coords.lat, coords.lon]).addTo(leafletMap);
+      let markerOptions = {};
+      if (isOwner && window.L && L.icon) {
+        const starIcon = L.icon({
+          iconUrl: "https://maps.google.com/mapfiles/kml/shapes/star.png",
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+          popupAnchor: [0, -28],
+        });
+        markerOptions.icon = starIcon;
+      }
+
+      L.marker([coords.lat, coords.lon], markerOptions).addTo(leafletMap);
     }
 
     function initModalClose() {
@@ -1056,11 +1071,26 @@
         const cached = getCachedCoords(st.id);
         if (!cached) return;
         const pos = { lat: cached.lat, lng: cached.lon };
-        const marker = new google.maps.Marker({
+
+        const nameLower = (st.name || "").toLowerCase();
+        const isOwner =
+          nameLower.includes(HOME_STATION_KEYWORD) ||
+          st.verified_owner === true;
+
+        const markerOptions = {
           position: pos,
           map: googleMap,
           title: st.name || "Station",
-        });
+        };
+
+        if (isOwner && window.google && window.google.maps) {
+          markerOptions.icon = {
+            url: "https://maps.google.com/mapfiles/kml/shapes/star.png",
+            scaledSize: new google.maps.Size(32, 32),
+          };
+        }
+
+        const marker = new google.maps.Marker(markerOptions);
 
         const pc = st.prices_cents || {};
         const reg =
