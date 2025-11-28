@@ -291,8 +291,22 @@
     }
 
     .page-header {
-      margin-bottom: 14px;
-    }
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-header-left {
+  max-width: 420px;
+}
+
+.page-header-right {
+  min-width: 220px;
+  max-width: 260px;
+}
 
     .page-title {
       margin: 0 0 4px;
@@ -598,22 +612,7 @@
             </button>
           </div>
         </div>
-
-        <div class="sidebar-section">
-          <h3>Admin session</h3>
-          <div class="login-card">
-            <label for="password-input">Admin password</label>
-            <input
-              type="password"
-              id="password-input"
-              class="login-input"
-              placeholder="Enter admin password…"
-            />
-            <button id="login-btn" class="login-button">Sign in</button>
-            <span id="login-status" class="login-status"></span>
-          </div>
-        </div>
-
+       
         <div class="sidebar-footer">
           <span class="badge alert">Internal use only</span>
           <div>Signed-in user sees live data from Tarcart API.</div>
@@ -625,12 +624,28 @@
       <main class="main-panel">
         <div class="page-body">
           <div class="page-header">
-            <h1 class="page-title">Tarcart control center</h1>
-            <p class="page-subtitle">
-              Review crowd submissions, track pricing history, and monitor your
-              competitive position.
-            </p>
-          </div>
+  <div class="page-header-left">
+    <h1 class="page-title">Tarcart control center</h1>
+    <p class="page-subtitle">
+      Review crowd submissions, track pricing history, and monitor your
+      competitive position.
+    </p>
+  </div>
+
+  <div class="page-header-right">
+    <div class="login-card">
+      <label for="password-input">Admin password</label>
+      <input
+        type="password"
+        id="password-input"
+        class="login-input"
+        placeholder="Enter admin password…"
+      />
+      <button id="login-btn" class="login-button">Sign in</button>
+      <span id="login-status" class="login-status"></span>
+    </div>
+  </div>
+</div>
 
           <div id="global-status" class="status-bar"></div>
 
