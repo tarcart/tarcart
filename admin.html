@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tarcart – Admin (Price Review)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #020617;
+      --card: #020617;
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.16);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #1f2937;
+      --danger: #f97373;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 40%, #000 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+    }
+    .page {
+      width: 100%;
+      max-width: 1120px;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 24px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      box-shadow: 0 24px 80px rgba(15, 23, 42, 0.9);
+      padding: 20px;
+      backdrop-filter: blur(18px);
+    }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.4rem;
+      letter-spacing: 0.04em;
+    }
+    .badge {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(248, 250, 252, 0.06);
+      border: 1px solid rgba(248, 250, 252, 0.3);
+      margin-left: 8px;
+    }
+    .subheading {
+      margin: 3px 0 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    a.back-link {
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-decoration: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
+    a.back-link:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(34, 197, 94, 0.06);
+    }
+    .token-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 0.8rem;
+    }
+    .token-bar input {
+      min-width: 220px;
+      max-width: 280px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #020617;
+      color: var(--text);
+      outline: none;
+      font: inherit;
+      font-size: 0.8rem;
+    }
+    .token-bar button {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #020617;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .token-status {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .token-status.ok { color: var(--accent); }
+    .token-status.err { color: var(--danger); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    th, td {
+      padding: 8px 6px;
+      border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    tr:hover td {
+      background: rgba(15, 23, 42, 0.9);
+    }
+    .station-name {
+      font-weight: 600;
+    }
+    .meta {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      margin-right: 4px;
+      margin-bottom: 4px;
+    }
+    .pill strong {
+      margin-left: 4px;
+      color: var(--accent);
+    }
+    .note {
+      white-space: pre-wrap;
+      font-size: 0.8rem;
+      color: var(--text);
+    }
+    .btn-group {
+      display: inline-flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-size: 0.75rem;
+      cursor: pointer;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+    }
+    .btn-approve {
+      background: var(--accent-soft);
+      border-color: rgba(34, 197, 94, 0.8);
+      color: var(--accent);
+    }
+    .btn-reject {
+      border-color: rgba(248, 113, 113, 0.8);
+      color: var(--danger);
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    .status-bar {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .status-bar.err { color: var(--danger); }
+    .status-bar.ok { color: var(--accent); }
+    .empty {
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding: 12px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div>
+        <h1>
+          Tarcart – Price Review
+          <span class="badge">Internal</span>
+        </h1>
+        <p class="subheading">
+          Approve or reject community price submissions. Approved prices update the public Tarcart gas page.
+        </p>
+      </div>
+      <div>
+        <a class="back-link" href="gas.html">← Back to Local Gas Prices</a>
+      </div>
+    </header>
+
+    <div class="token-bar">
+      <span>Admin token:</span>
+      <input type="password" id="token-input" placeholder="Enter ADMIN_TOKEN…" />
+      <button id="save-token-btn">Use token</button>
+      <span id="token-status" class="token-status"></span>
+    </div>
+
+    <div class="status-bar" id="global-status"></div>
+
+    <div id="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Station</th>
+            <th>Grade / Price</th>
+            <th>Notes</th>
+            <th>Submitted</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="submissions-tbody">
+          <tr><td colspan="5" class="empty">Enter a valid admin token and pending submissions will appear here.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "https://octopus-app-v54dv.ondigitalocean.app";
+
+    const tokenInput = document.getElementById("token-input");
+    const saveTokenBtn = document.getElementById("save-token-btn");
+    const tokenStatus = document.getElementById("token-status");
+    const globalStatus = document.getElementById("global-status");
+    const tbody = document.getElementById("submissions-tbody");
+
+    let adminToken = localStorage.getItem("tarcart-admin-token") || "";
+
+    if (adminToken) {
+      tokenInput.value = adminToken;
+      tokenStatus.textContent = "Token loaded from browser storage.";
+      tokenStatus.className = "token-status ok";
+      loadPending();
+    }
+
+    saveTokenBtn.addEventListener("click", () => {
+      const val = tokenInput.value.trim();
+      if (!val) {
+        tokenStatus.textContent = "Token cleared.";
+        tokenStatus.className = "token-status";
+        adminToken = "";
+        localStorage.removeItem("tarcart-admin-token");
+        tbody.innerHTML = '<tr><td colspan="5" class="empty">Enter a valid admin token and pending submissions will appear here.</td></tr>';
+        return;
+      }
+      adminToken = val;
+      localStorage.setItem("tarcart-admin-token", val);
+      tokenStatus.textContent = "Token saved. Loading submissions…";
+      tokenStatus.className = "token-status ok";
+      loadPending();
+    });
+
+    function formatDate(iso) {
+      if (!iso) return "—";
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return iso;
+      return d.toLocaleString();
+    }
+
+    function formatPriceFromCents(cents) {
+      if (cents == null) return "—";
+      return "$" + (cents / 1000).toFixed(3);
+    }
+
+    async function loadPending() {
+      globalStatus.textContent = "Loading pending submissions…";
+      globalStatus.className = "status-bar";
+
+      if (!adminToken) {
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          API_BASE + "/api/admin/submissions?status=pending",
+          {
+            headers: {
+              "x-admin-token": adminToken
+            }
+          }
+        );
+
+        if (res.status === 401) {
+          globalStatus.textContent = "Unauthorized – check your admin token.";
+          globalStatus.className = "status-bar err";
+          tbody.innerHTML =
+            '<tr><td colspan="5" class="empty">Unauthorized. Check your token.</td></tr>';
+          return;
+        }
+
+        if (!res.ok) {
+          throw new Error("HTTP " + res.status);
+        }
+
+        const data = await res.json();
+        renderSubmissions(data);
+        globalStatus.textContent = `Loaded ${data.length} pending submission(s).`;
+        globalStatus.className = "status-bar";
+      } catch (err) {
+        console.error("Failed to load admin submissions", err);
+        globalStatus.textContent =
+          "Error loading submissions. Check console logs or try again.";
+        globalStatus.className = "status-bar err";
+        tbody.innerHTML =
+          '<tr><td colspan="5" class="empty">Error loading submissions.</td></tr>';
+      }
+    }
+
+    function renderSubmissions(rows) {
+      if (!rows || rows.length === 0) {
+        tbody.innerHTML =
+          '<tr><td colspan="5" class="empty">No pending submissions.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = "";
+      rows.forEach((row) => {
+        const tr = document.createElement("tr");
+
+        const tdStation = document.createElement("td");
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "station-name";
+        nameDiv.textContent = row.station_name || "Unknown station";
+        tdStation.appendChild(nameDiv);
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+        meta.textContent = [
+          row.station_address,
+          [row.city, row.state].filter(Boolean).join(", ")
+        ]
+          .filter(Boolean)
+          .join(" • ");
+        tdStation.appendChild(meta);
+
+        const tdPrice = document.createElement("td");
+        const pill = document.createElement("span");
+        pill.className = "pill";
+        pill.innerHTML =
+          (row.grade ? row.grade.toUpperCase() : "—") +
+          " <strong>" +
+          formatPriceFromCents(row.price_cents) +
+          "</strong>";
+        tdPrice.appendChild(pill);
+
+        const tdNotes = document.createElement("td");
+        const noteDiv = document.createElement("div");
+        noteDiv.className = "note";
+        noteDiv.textContent = row.notes || "—";
+        tdNotes.appendChild(noteDiv);
+
+        const tdSubmitted = document.createElement("td");
+        const when = document.createElement("div");
+        when.className = "meta";
+        when.textContent = formatDate(row.created_at);
+        tdSubmitted.appendChild(when);
+
+        const who = document.createElement("div");
+        who.className = "meta";
+        who.textContent = row.submitter_name
+          ? `By: ${row.submitter_name}`
+          : "By: anonymous";
+        tdSubmitted.appendChild(who);
+
+        const tdActions = document.createElement("td");
+        const btnGroup = document.createElement("div");
+        btnGroup.className = "btn-group";
+
+        const approveBtn = document.createElement("button");
+        approveBtn.className = "btn btn-approve";
+        approveBtn.textContent = "Approve";
+        approveBtn.onclick = () => handleAction(row.id, "approve", approveBtn);
+
+        const rejectBtn = document.createElement("button");
+        rejectBtn.className = "btn btn-reject";
+        rejectBtn.textContent = "Reject";
+        rejectBtn.onclick = () => handleAction(row.id, "reject", rejectBtn);
+
+        btnGroup.appendChild(approveBtn);
+        btnGroup.appendChild(rejectBtn);
+        tdActions.appendChild(btnGroup);
+
+        tr.appendChild(tdStation);
+        tr.appendChild(tdPrice);
+        tr.appendChild(tdNotes);
+        tr.appendChild(tdSubmitted);
+        tr.appendChild(tdActions);
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function handleAction(id, action, buttonEl) {
+      if (!adminToken) {
+        alert("No admin token set.");
+        return;
+      }
+
+      const confirmText =
+        action === "approve"
+          ? "Approve this submission and update official prices?"
+          : "Reject this submission?";
+
+      if (!window.confirm(confirmText)) {
+        return;
+      }
+
+      buttonEl.disabled = true;
+
+      try {
+        const res = await fetch(
+          API_BASE +
+            "/api/admin/submissions/" +
+            encodeURIComponent(id) +
+            "/" +
+            action,
+          {
+            method: "POST",
+            headers: {
+              "x-admin-token": adminToken
+            }
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error("HTTP " + res.status);
+        }
+
+        globalStatus.textContent =
+          action === "approve"
+            ? "Submission approved and prices updated."
+            : "Submission rejected.";
+        globalStatus.className = "status-bar ok";
+
+        // Reload list after action
+        loadPending();
+      } catch (err) {
+        console.error("Failed to " + action + " submission", err);
+        globalStatus.textContent =
+          "Failed to " + action + " submission. See console logs.";
+        globalStatus.className = "status-bar err";
+      } finally {
+        buttonEl.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
