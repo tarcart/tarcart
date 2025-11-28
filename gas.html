@@ -165,11 +165,11 @@
     /* STATION LIST / MAP WRAPPERS */
     #stations-list-view {
       margin-top: 4px;
+      display: none;
     }
 
     #stations-map-view {
       margin-top: 4px;
-      display: none;
     }
 
     #stations-map {
@@ -623,7 +623,7 @@
   <script
     async
     defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApe83XPa6MNovCFytBZv0TICBqed7lPI8&callback=tarcartGoogleMapsInit"
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY_HERE&callback=tarcartGoogleMapsInit"
   ></script>
 </head>
 
@@ -650,10 +650,10 @@
       </p>
 
       <div class="view-toggle">
-        <button class="view-toggle-btn active" data-view="list">
+        <button class="view-toggle-btn" data-view="list">
           List view
         </button>
-        <button class="view-toggle-btn" data-view="map">
+        <button class="view-toggle-btn active" data-view="map">
           Google Map view
         </button>
       </div>
