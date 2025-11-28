@@ -2,53 +2,117 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Tarcart – Admin (Price Review)</title>
+  <title>Tarcart – Admin · Price Review</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
       --bg: #020617;
+      --shell: rgba(15, 23, 42, 0.97);
       --card: #020617;
       --accent: #22c55e;
-      --accent-soft: rgba(34, 197, 94, 0.16);
+      --accent-soft: rgba(34, 197, 94, 0.18);
+      --accent-soft-strong: rgba(34, 197, 94, 0.28);
+      --danger: #f97373;
+      --danger-soft: rgba(248, 113, 113, 0.12);
       --text: #e5e7eb;
       --muted: #9ca3af;
       --border: #1f2937;
-      --danger: #f97373;
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #1f2937 0, #020617 40%, #000 100%);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background:
+        radial-gradient(circle at top left, #22c55e18 0, transparent 55%),
+        radial-gradient(circle at top right, #0ea5e918 0, transparent 55%),
+        radial-gradient(circle at bottom, #1e293b 0, #020617 55%, #000 100%);
       color: var(--text);
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      padding: 24px;
-    }
-    .page {
-      width: 100%;
-      max-width: 1120px;
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 24px;
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      box-shadow: 0 24px 80px rgba(15, 23, 42, 0.9);
       padding: 20px;
-      backdrop-filter: blur(18px);
     }
-    header {
+
+    .shell {
+      width: 100%;
+      max-width: 1180px;
+      background: var(--shell);
+      border-radius: 26px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      box-shadow:
+        0 24px 80px rgba(15, 23, 42, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 0.8);
+      overflow: hidden;
+      backdrop-filter: blur(22px);
+    }
+
+    .shell-header {
       display: flex;
-      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
+      gap: 16px;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(30, 64, 175, 0.5);
+      background:
+        linear-gradient(120deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.98)),
+        radial-gradient(circle at top left, rgba(34, 197, 94, 0.16), transparent 65%);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
       gap: 10px;
-      margin-bottom: 14px;
     }
-    h1 {
-      margin: 0;
-      font-size: 1.4rem;
-      letter-spacing: 0.04em;
+
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 11px;
+      background:
+        conic-gradient(from 220deg, #22c55e, #0ea5e9, #22c55e);
+      padding: 2px;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9);
     }
+
+    .brand-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 9px;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 65%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      color: #e5e7eb;
+    }
+
+    .brand-text-title {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .brand-text-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .shell-header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
     .badge {
       font-size: 0.7rem;
       text-transform: uppercase;
@@ -57,46 +121,83 @@
       border-radius: 999px;
       background: rgba(248, 250, 252, 0.06);
       border: 1px solid rgba(248, 250, 252, 0.3);
-      margin-left: 8px;
-    }
-    .subheading {
-      margin: 3px 0 0;
-      font-size: 0.85rem;
       color: var(--muted);
     }
-    a.back-link {
-      font-size: 0.85rem;
+
+    .badge.alert {
+      background: var(--accent-soft);
+      border-color: rgba(34, 197, 94, 0.8);
+      color: var(--accent);
+    }
+
+    .back-link {
+      font-size: 0.8rem;
       color: var(--muted);
       text-decoration: none;
       border-radius: 999px;
       padding: 6px 12px;
       border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.9);
     }
-    a.back-link:hover {
+
+    .back-link:hover {
       border-color: var(--accent);
       color: var(--accent);
       background: rgba(34, 197, 94, 0.06);
     }
 
-    .top-row {
+    .page-body {
+      padding: 18px 20px 20px;
+    }
+
+    .page-header {
       display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: flex-start;
       justify-content: space-between;
-      margin-bottom: 12px;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .page-title-block {
+      max-width: 420px;
+    }
+
+    .page-title {
+      margin: 0 0 4px;
+      font-size: 1.1rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .page-subtitle {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
     }
 
     .login-card {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.8rem;
+      display: inline-flex;
       flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(31, 41, 55, 0.9);
     }
-    .login-card input {
-      min-width: 220px;
-      max-width: 280px;
+
+    .login-card label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .login-input {
+      min-width: 180px;
+      max-width: 260px;
       padding: 6px 8px;
       border-radius: 999px;
       border: 1px solid var(--border);
@@ -106,7 +207,13 @@
       font: inherit;
       font-size: 0.8rem;
     }
-    .login-card button {
+
+    .login-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.4);
+    }
+
+    .login-button {
       padding: 6px 12px;
       border-radius: 999px;
       border: none;
@@ -116,95 +223,150 @@
       font-size: 0.8rem;
       font-weight: 600;
     }
+
     .login-status {
       font-size: 0.8rem;
       color: var(--muted);
     }
-    .login-status.ok { color: var(--accent); }
-    .login-status.err { color: var(--danger); }
+    .login-status.ok {
+      color: var(--accent);
+    }
+    .login-status.err {
+      color: var(--danger);
+    }
 
     .status-bar {
-      margin-top: 4px;
+      margin: 4px 0 10px;
       font-size: 0.8rem;
       color: var(--muted);
     }
-    .status-bar.err { color: var(--danger); }
-    .status-bar.ok { color: var(--accent); }
+    .status-bar.ok {
+      color: var(--accent);
+    }
+    .status-bar.err {
+      color: var(--danger);
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      padding: 14px 16px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.85);
+    }
+
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 0.9rem;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      color: #e5e7eb;
+    }
+
+    .card-tagline {
+      margin: 0 0 8px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
 
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 0.82rem;
-      margin-top: 8px;
     }
-    th, td {
+
+    th,
+    td {
       padding: 8px 6px;
       border-bottom: 1px solid rgba(31, 41, 55, 0.9);
       text-align: left;
       vertical-align: top;
     }
+
     th {
       font-size: 0.72rem;
       color: var(--muted);
       text-transform: uppercase;
       letter-spacing: 0.08em;
     }
+
     tr:hover td {
       background: rgba(15, 23, 42, 0.9);
     }
+
     .station-name {
       font-weight: 600;
     }
+
     .meta {
       font-size: 0.72rem;
       color: var(--muted);
     }
+
     .pill {
       display: inline-flex;
       align-items: center;
       font-size: 0.75rem;
       padding: 3px 8px;
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.3);
+      border: 1px solid rgba(148, 163, 184, 0.35);
       margin-right: 4px;
       margin-bottom: 4px;
+      background: rgba(15, 23, 42, 0.9);
     }
+
     .pill strong {
       margin-left: 4px;
       color: var(--accent);
     }
+
     .note {
       white-space: pre-wrap;
       font-size: 0.8rem;
       color: var(--text);
     }
+
     .btn-group {
       display: inline-flex;
       gap: 4px;
       flex-wrap: wrap;
     }
+
     .btn {
       padding: 4px 10px;
       border-radius: 999px;
       border: 1px solid transparent;
       font-size: 0.75rem;
       cursor: pointer;
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(15, 23, 42, 0.95);
       color: var(--text);
     }
+
     .btn-approve {
       background: var(--accent-soft);
       border-color: rgba(34, 197, 94, 0.8);
       color: var(--accent);
     }
+
     .btn-reject {
-      border-color: rgba(248, 113, 113, 0.8);
+      border-color: rgba(248, 113, 113, 0.9);
       color: var(--danger);
+      background: var(--danger-soft);
     }
+
     .btn:disabled {
       opacity: 0.6;
       cursor: default;
     }
+
     .empty {
       font-size: 0.8rem;
       color: var(--muted);
@@ -213,51 +375,79 @@
   </style>
 </head>
 <body>
-  <div class="page">
-    <header>
-      <div>
-        <h1>
-          Tarcart – Price Review
-          <span class="badge">Internal</span>
-        </h1>
-        <p class="subheading">
-          Approve or reject community price submissions. Approved prices update the public Tarcart gas page.
-        </p>
+  <div class="shell">
+    <div class="shell-header">
+      <div class="brand">
+        <div class="brand-mark">
+          <div class="brand-inner">TA</div>
+        </div>
+        <div>
+          <div class="brand-text-title">Tarcart Admin</div>
+          <div class="brand-text-sub">Shields Bazaar · Price Review Console</div>
+        </div>
       </div>
-      <div>
-        <a class="back-link" href="gas.html">← Back to Local Gas Prices</a>
-      </div>
-    </header>
-
-    <div class="top-row">
-      <div class="login-card">
-        <span>Admin password:</span>
-        <input type="password" id="password-input" placeholder="Enter admin password…" />
-        <button id="login-btn">Sign in</button>
-        <span id="login-status" class="login-status"></span>
+      <div class="shell-header-right">
+        <span class="badge alert">Internal use only</span>
+        <a href="gas.html" class="back-link">← Public prices</a>
       </div>
     </div>
 
-    <div class="status-bar" id="global-status"></div>
+    <div class="page-body">
+      <div class="page-header">
+        <div class="page-title-block">
+          <h2 class="page-title">Pending submissions</h2>
+          <p class="page-subtitle">
+            Review community price updates and station suggestions. Approvals
+            update official Tarcart data and the public gas page.
+          </p>
+        </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Station</th>
-          <th>Grade / Price</th>
-          <th>Notes</th>
-          <th>Submitted</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="submissions-tbody">
-        <tr>
-          <td colspan="5" class="empty">
-            Sign in with your admin password to view pending submissions.
-          </td>
-        </tr>
-      </tbody>
-    </table>
+        <div class="login-card">
+          <label for="password-input">Admin password</label>
+          <input
+            type="password"
+            id="password-input"
+            class="login-input"
+            placeholder="Enter admin password…"
+          />
+          <button id="login-btn" class="login-button">Sign in</button>
+          <span id="login-status" class="login-status"></span>
+        </div>
+      </div>
+
+      <div id="global-status" class="status-bar"></div>
+
+      <section class="card">
+        <div class="card-header-row">
+          <h2>Submissions queue</h2>
+          <span class="badge">Pending</span>
+        </div>
+        <p class="card-tagline">
+          Approve to update official records. For new stations, approval creates
+          a station entry. For price updates, approval writes into
+          <code>station_prices</code>.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Station</th>
+              <th>Grade / price</th>
+              <th>Notes</th>
+              <th>Submitted</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="submissions-tbody">
+            <tr>
+              <td colspan="5" class="empty">
+                Sign in with your admin password to view pending submissions.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
   </div>
 
   <script>
@@ -270,61 +460,6 @@
     const tbody = document.getElementById("submissions-tbody");
 
     let adminToken = localStorage.getItem("tarcart-admin-token") || "";
-
-    if (adminToken) {
-      loginStatus.textContent = "Using saved session.";
-      loginStatus.className = "login-status ok";
-      loadPending();
-    }
-
-    loginBtn.addEventListener("click", async () => {
-      const pwd = passwordInput.value.trim();
-      if (!pwd) {
-        loginStatus.textContent = "Please enter the admin password.";
-        loginStatus.className = "login-status err";
-        return;
-      }
-
-      loginBtn.disabled = true;
-      loginStatus.textContent = "Signing in…";
-      loginStatus.className = "login-status";
-
-      try {
-        const res = await fetch(API_BASE + "/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ password: pwd })
-        });
-
-        if (!res.ok) {
-          if (res.status === 401) {
-            loginStatus.textContent = "Invalid password.";
-            loginStatus.className = "login-status err";
-            return;
-          }
-          throw new Error("HTTP " + res.status);
-        }
-
-        const data = await res.json();
-        if (!data.token) {
-          loginStatus.textContent = "Login response missing token.";
-          loginStatus.className = "login-status err";
-          return;
-        }
-
-        adminToken = data.token;
-        localStorage.setItem("tarcart-admin-token", adminToken);
-        loginStatus.textContent = "Signed in. Loading submissions…";
-        loginStatus.className = "login-status ok";
-        loadPending();
-      } catch (err) {
-        console.error("Login failed", err);
-        loginStatus.textContent = "Login failed. See console logs.";
-        loginStatus.className = "login-status err";
-      } finally {
-        loginBtn.disabled = false;
-      }
-    });
 
     function formatDate(iso) {
       if (!iso) return "—";
@@ -476,7 +611,7 @@
 
       const confirmText =
         action === "approve"
-          ? "Approve this submission and update official prices?"
+          ? "Approve this submission and update official data?"
           : "Reject this submission?";
 
       if (!window.confirm(confirmText)) {
@@ -506,11 +641,10 @@
 
         globalStatus.textContent =
           action === "approve"
-            ? "Submission approved and prices updated."
+            ? "Submission approved and data updated."
             : "Submission rejected.";
         globalStatus.className = "status-bar ok";
 
-        // Reload list after action
         loadPending();
       } catch (err) {
         console.error("Failed to " + action + " submission", err);
@@ -520,6 +654,63 @@
       } finally {
         buttonEl.disabled = false;
       }
+    }
+
+    // Login flow
+    loginBtn.addEventListener("click", async () => {
+      const pwd = passwordInput.value.trim();
+      if (!pwd) {
+        loginStatus.textContent = "Please enter the admin password.";
+        loginStatus.className = "login-status err";
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginStatus.textContent = "Signing in…";
+      loginStatus.className = "login-status";
+
+      try {
+        const res = await fetch(API_BASE + "/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: pwd })
+        });
+
+        if (!res.ok) {
+          if (res.status === 401) {
+            loginStatus.textContent = "Invalid password.";
+            loginStatus.className = "login-status err";
+            return;
+          }
+          throw new Error("HTTP " + res.status);
+        }
+
+        const data = await res.json();
+        if (!data.token) {
+          loginStatus.textContent = "Login response missing token.";
+          loginStatus.className = "login-status err";
+          return;
+        }
+
+        adminToken = data.token;
+        localStorage.setItem("tarcart-admin-token", adminToken);
+        loginStatus.textContent = "Signed in. Loading submissions…";
+        loginStatus.className = "login-status ok";
+        loadPending();
+      } catch (err) {
+        console.error("Login failed", err);
+        loginStatus.textContent = "Login failed. See console logs.";
+        loginStatus.className = "login-status err";
+      } finally {
+        loginBtn.disabled = false;
+      }
+    });
+
+    // Auto-load if session exists
+    if (adminToken) {
+      loginStatus.textContent = "Using saved session.";
+      loginStatus.className = "login-status ok";
+      loadPending();
     }
   </script>
 </body>
