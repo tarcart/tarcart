@@ -890,10 +890,17 @@
     }
 
     async function geocodeStation(station) {
-      // Special-case address override for 1900 NE 123rd St to improve geocoding
+      // Special-case overrides for map accuracy:
+      // 1) Shields (home station) -> fixed known address
+      // 2) 1900 NE 123rd St -> fixed North Miami address
       let addressString;
+
+      const nameLower = (station.name || "").toLowerCase();
       const rawAddress = (station.address || "").toLowerCase();
-      if (rawAddress.includes("1900 ne 123rd st")) {
+
+      if (nameLower.includes("shields")) {
+        addressString = "12300 Biscayne Blvd, North Miami, FL 33181";
+      } else if (rawAddress.includes("1900 ne 123rd st")) {
         addressString = "1900 NE 123rd St, North Miami, FL 33181";
       } else {
         addressString = [station.address, station.city, station.state]
