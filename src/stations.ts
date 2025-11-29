@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { pool } from "../db";
-import { geocodeAddress } from "../services/geocoding";
+import { pool } from "./db";
+import { geocodeAddress } from "./services/geocoding";
 
 const router = Router();
 
