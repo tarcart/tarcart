@@ -543,41 +543,19 @@
       height: 100px;
       border-radius: 12px;
       overflow: hidden;
-      background: radial-gradient(circle at top, #020617, #020617 40%, #0b1120 100%);
+      background: radial-gradient(circle at center, #020617, #1e293b);
       display: flex;
-      flex-direction: column;
-      align-items: flex-start;
+      align-items: center;
       justify-content: center;
-      padding: 8px 10px;
-      gap: 4px;
       font-size: 11px;
-      color: #e5e7eb;
-      border: 1px solid rgba(15, 23, 42, 0.9);
-      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+      color: rgba(148, 163, 184, 0.9);
     }
 
-    .mini-price-line {
+    .mini-map img {
       width: 100%;
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      font-size: 11px;
-    }
-
-    .mini-price-label {
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      font-size: 9px;
-      opacity: 0.75;
-    }
-
-    .mini-price-value {
-      font-weight: 700;
-      font-size: 13px;
-    }
-
-    .mini-price-value.missing {
-      opacity: 0.45;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     /* Right column card */
@@ -1218,17 +1196,32 @@
 
       filtered.forEach((st) => {
         const isShields = st.id === HOME_STATION_ID || st.is_home === true;
-        const lat = st.latitude ?? st.lat ?? null;
-        const lng = st.longitude ?? st.lon ?? null;
 
-        // Fallback to SHIELDS_COORDS if missing and it's Shields
-        const pos = isShields
-          ? SHIELDS_COORDS
-          : lat != null && lng != null
-          ? { lat, lng }
-          : null;
+        // Normalize coordinates – API may send strings, we only want real numbers
+        let rawLat = st.latitude ?? st.lat ?? null;
+        let rawLng = st.longitude ?? st.lon ?? null;
 
-        if (!pos) return;
+        let lat =
+          rawLat != null && rawLat !== ""
+            ? Number(rawLat)
+            : null;
+        let lng =
+          rawLng != null && rawLng !== ""
+            ? Number(rawLng)
+            : null;
+
+        // If this is Shields and coords are bad, fall back to the hard‑coded home coords
+        if (isShields && (!Number.isFinite(lat) || !Number.isFinite(lng))) {
+          lat = SHIELDS_COORDS.lat;
+          lng = SHIELDS_COORDS.lng;
+        }
+
+        // Skip any station that still doesn't have usable coordinates
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+          return;
+        }
+
+        const pos = { lat, lng };
 
         const marker = new g.maps.Marker({
           position: pos,
@@ -1393,38 +1386,17 @@
         const mini = document.createElement("div");
         mini.className = "mini-map";
 
-        const grades = [
-          { key: "87", label: "Reg" },
-          { key: "89", label: "Mid" },
-          { key: "93", label: "Prem" },
-          { key: "diesel", label: "Diesel" }
-        ];
+        const lat = st.latitude ?? st.lat ?? (isShields ? SHIELDS_COORDS.lat : null);
+        const lng = st.longitude ?? st.lon ?? (isShields ? SHIELDS_COORDS.lng : null);
 
-        grades.forEach((grade) => {
-          const line = document.createElement("div");
-          line.className = "mini-price-line";
-
-          const labelEl = document.createElement("span");
-          labelEl.className = "mini-price-label";
-          labelEl.textContent = grade.label;
-
-          const valueEl = document.createElement("span");
-          valueEl.className = "mini-price-value";
-
-          const cents =
-            st.prices_cents?.[grade.key] ?? st.prices_cents?.[grade.key.toUpperCase()] ?? null;
-
-          if (cents != null) {
-            valueEl.textContent = "$" + dollarsFromCents(cents);
-          } else {
-            valueEl.textContent = "—";
-            valueEl.classList.add("missing");
-          }
-
-          line.appendChild(labelEl);
-          line.appendChild(valueEl);
-          mini.appendChild(line);
-        });
+        if (lat != null && lng != null) {
+  const img = document.createElement("img");
+  img.src = getStaticMapUrl(lat, lng, 15);
+  img.alt = "Mini map for " + (st.name || "station");
+  mini.appendChild(img);
+} else {
+  mini.textContent = "Map not available";
+}
 
         row.appendChild(main);
         row.appendChild(mini);
