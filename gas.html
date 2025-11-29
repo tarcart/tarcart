@@ -1,1462 +1,1660 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="auto">
 <head>
   <meta charset="UTF-8" />
   <title>Tarcart – Local Gas Prices</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+  <!-- Google Font (rounded, playful) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- MarkerClusterer (for clustering) -->
+  <script
+    src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"
+    defer
+  ></script>
+
+  <!-- Google Maps JS (replace key!) -->
+  <script
+    id="gmaps-script"
+    async
+    defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApe83XPa6MNovCFytBZv0TICBqed7lPI8&callback=tarcartOnGoogleMapsReady"
+  ></script>
+
   <style>
     :root {
-      --bg: #f5f7fa;
-      --card: #ffffff;
-      --border: #e5e7eb;
-      --border-strong: #d1d5db;
-      --text: #111827;
-      --muted: #6b7280;
+      --sidebar-width: 260px;
+      --sidebar-bg-light: #ffffff;
+      --sidebar-bg-dark: #0f172a;
+      --bg-light: #f3f4f6;
+      --bg-dark: #020617;
       --accent: #2563eb;
-      --accent-soft: rgba(37, 99, 235, 0.12);
-      --accent-soft-strong: rgba(37, 99, 235, 0.18);
-      --good: #16a34a;
-      --bad: #dc2626;
-      --radius-card: 18px;
-      --radius-map: 14px;
-      --shadow-card: 0 12px 32px rgba(15, 23, 42, 0.08);
-      --shadow-hover: 0 18px 40px rgba(15, 23, 42, 0.12);
+      --accent-soft: rgba(37, 99, 235, 0.14);
+      --accent-strong: #1d4ed8;
+      --accent-gradient: linear-gradient(135deg, #60a5fa, #2563eb);
+      --text-main-light: #0f172a;
+      --text-main-dark: #e5e7eb;
+      --card-bg-light: #ffffff;
+      --card-bg-dark: #020617;
+      --border-subtle-light: #e5e7eb;
+      --border-subtle-dark: #111827;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-pill: 999px;
+      --shadow-soft-light: 0 18px 45px rgba(15, 23, 42, 0.12);
+      --shadow-soft-dark: 0 18px 45px rgba(0, 0, 0, 0.7);
+      --transition-fast: 160ms ease-out;
+      --transition-slow: 240ms ease;
+      --header-height: 64px;
+      --pulse-color: rgba(59, 130, 246, 0.45);
+    }
+
+    html[data-theme="light"] {
+      color-scheme: light;
+      --bg: var(--bg-light);
+      --text-main: var(--text-main-light);
+      --sidebar-bg: var(--sidebar-bg-light);
+      --card-bg: var(--card-bg-light);
+      --border-subtle: var(--border-subtle-light);
+      --shadow-soft: var(--shadow-soft-light);
+    }
+
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: var(--bg-dark);
+      --text-main: var(--text-main-dark);
+      --sidebar-bg: var(--sidebar-bg-dark);
+      --card-bg: var(--card-bg-dark);
+      --border-subtle: var(--border-subtle-dark);
+      --shadow-soft: var(--shadow-soft-dark);
     }
 
     * {
-      margin: 0;
-      padding: 0;
       box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
     }
 
     body {
-      background: radial-gradient(circle at top left, #e0ecff 0, transparent 50%),
-        radial-gradient(circle at top right, #e0f2fe 0, transparent 50%),
-        linear-gradient(to bottom, #f5f7fa, #e5e7eb);
-      color: var(--text);
-      line-height: 1.4;
+      margin: 0;
+      font-family: "Nunito", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #1e293b 0, var(--bg) 45%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
     }
 
-    /* HEADER */
-    .header {
-      background: var(--card);
-      padding: 18px 24px;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    /* Layout */
+
+    .tarcart-shell {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+      width: 100%;
+      height: 100vh;
+    }
+
+    .tarcart-sidebar {
+      background: var(--sidebar-bg);
+      box-shadow: 8px 0 40px rgba(15, 23, 42, 0.3);
+      display: flex;
+      flex-direction: column;
+      padding: 16px 14px;
+      gap: 16px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .sidebar-header {
       display: flex;
       align-items: center;
-      gap: 14px;
-      border-bottom-left-radius: 16px;
-      border-bottom-right-radius: 16px;
-      position: sticky;
-      top: 0;
-      z-index: 20;
+      gap: 10px;
+      padding: 10px 10px 6px;
+      border-radius: var(--radius-md);
+      background: radial-gradient(circle at top left, #1d4ed8 0, #0f172a 55%);
+      color: #e5e7eb;
+      box-shadow: 0 18px 35px rgba(15, 23, 42, 0.75);
     }
 
-    .header-logo {
+    .sidebar-logo {
       width: 40px;
       height: 40px;
       border-radius: 999px;
-      background: radial-gradient(circle at 30% 20%, #eff6ff 0, #2563eb 55%);
+      background: radial-gradient(circle at top, #60a5fa, #2563eb);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
-      color: #eff6ff;
-      font-size: 1rem;
-      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.4);
+      overflow: hidden;
+      flex-shrink: 0;
     }
 
-    .header-title-block {
+    .sidebar-logo img {
+      width: 36px;
+      height: 36px;
+      display: block;
+      border-radius: 999px;
+    }
+
+    .sidebar-title-block {
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
 
-    .header-title {
-      font-size: 1.15rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
+    .sidebar-title {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.01em;
+    }
+
+    .sidebar-subtitle {
+      font-size: 11px;
+      opacity: 0.78;
+    }
+
+    .sidebar-nav {
+      margin-top: 8px;
+      padding: 4px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .sidebar-section-label {
+      font-size: 11px;
       text-transform: uppercase;
-      color: var(--text);
+      letter-spacing: 0.12em;
+      opacity: 0.58;
+      padding: 4px 10px 4px;
+    }
+
+    .sidebar-nav-btn {
+      border: none;
+      background: transparent;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 8px 10px;
+      gap: 8px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background var(--transition-fast), color var(--transition-fast),
+        transform 80ms ease-out;
+    }
+
+    .sidebar-nav-btn:hover {
+      background: rgba(148, 163, 184, 0.18);
+      transform: translateY(-1px);
+    }
+
+    .sidebar-nav-btn.active {
+      background: var(--accent-gradient);
+      color: white;
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.55);
+    }
+
+    .sidebar-nav-icon {
+      width: 20px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .sidebar-nav-label {
+      flex: 1;
+      text-align: left;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 4px 10px 2px;
+      font-size: 11px;
+      opacity: 0.65;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-theme-toggle {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 3px 7px;
+      background: rgba(148, 163, 184, 0.07);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+    }
+
+    .sidebar-theme-toggle span {
+      font-size: 13px;
+    }
+
+    .sidebar-collapse-btn {
+      position: absolute;
+      top: 14px;
+      right: -10px;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent-gradient);
+      color: white;
+      box-shadow: 0 12px 28px rgba(37, 99, 235, 0.9);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      z-index: 15;
+    }
+
+    .tarcart-shell.collapsed .tarcart-sidebar {
+      width: 68px;
+      padding-inline: 10px 6px;
+    }
+
+    .tarcart-shell.collapsed {
+      grid-template-columns: 72px minmax(0, 1fr);
+    }
+
+    .tarcart-shell.collapsed .sidebar-title-block,
+    .tarcart-shell.collapsed .sidebar-section-label,
+    .tarcart-shell.collapsed .sidebar-nav-label,
+    .tarcart-shell.collapsed .sidebar-footer-text {
+      display: none;
+    }
+
+    .tarcart-shell.collapsed .sidebar-subtitle {
+      display: none;
+    }
+
+    .tarcart-shell.collapsed .sidebar-nav-btn {
+      justify-content: center;
+      padding-inline: 8px;
+    }
+
+    .tarcart-shell.collapsed .sidebar-collapse-btn {
+      right: -11px;
+      transform: rotate(180deg);
+    }
+
+    .tarcart-main {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .tarcart-header {
+      height: var(--header-height);
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(18px);
+      background: linear-gradient(
+          to bottom,
+          rgba(15, 23, 42, 0.82),
+          rgba(15, 23, 42, 0)
+        ),
+        radial-gradient(circle at top right, rgba(37, 99, 235, 0.22), transparent);
+      color: #e5e7eb;
+      box-shadow: 0 14px 35px rgba(15, 23, 42, 0.75);
+      z-index: 5;
+    }
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .header-title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
     }
 
     .header-subtitle {
-      font-size: 0.84rem;
-      color: var(--muted);
+      font-size: 12px;
+      opacity: 0.75;
     }
 
-    /* LAYOUT */
-    .container {
-      width: 100%;
-      max-width: 1400px;
-      margin: 26px auto 32px;
-      padding: 0 22px;
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chip {
+      border-radius: 999px;
+      font-size: 11px;
+      padding: 4px 9px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: rgba(15, 23, 42, 0.72);
+      color: #e5e7eb;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .chip .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3);
+    }
+
+    .chip-outline {
+      border-radius: 999px;
+      border: 1px dashed rgba(148, 163, 184, 0.55);
+      padding: 4px 10px;
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    .tarcart-content {
+      flex: 1;
+      padding: 14px 18px 18px;
+      overflow: auto;
+    }
+
+    .tarcart-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
-      gap: 24px;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.1fr);
+      gap: 16px;
+      align-items: flex-start;
     }
 
-    @media (max-width: 900px) {
-      .container {
-        grid-template-columns: 1fr;
+    @media (max-width: 1024px) {
+      .tarcart-grid {
+        grid-template-columns: minmax(0, 1fr);
       }
     }
 
     .card {
-      background: var(--card);
-      padding: 20px 20px 18px;
-      border-radius: var(--radius-card);
-      box-shadow: var(--shadow-card);
-      border: 1px solid rgba(229, 231, 235, 0.95);
-      position: relative;
-      overflow: hidden;
+      background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent),
+        var(--card-bg);
+      border-radius: 24px;
+      padding: 16px 16px 14px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148, 163, 184, 0.18);
     }
 
-    .card h2 {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      color: var(--text);
-    }
-
-    .card-subtitle {
-      font-size: 0.84rem;
-      color: var(--muted);
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 8px;
     }
 
-    /* VIEW TOGGLE (LIST / MAP) */
-    .view-toggle {
-      display: inline-flex;
-      gap: 6px;
-      padding: 3px;
-      border-radius: 999px;
-      background: #f3f4f6;
-      border: 1px solid var(--border);
-      margin-bottom: 10px;
-    }
-
-    .view-toggle-btn {
-      padding: 6px 13px;
-      border-radius: 999px;
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      font-size: 0.82rem;
-      cursor: pointer;
-      transition: background-color 0.16s ease, color 0.16s ease,
-        transform 0.12s ease;
-      white-space: nowrap;
-    }
-
-    .view-toggle-btn.active {
-      background: #ffffff;
-      color: var(--accent);
-      font-weight: 600;
-      transform: translateY(-1px);
-      box-shadow: 0 5px 12px rgba(148, 163, 184, 0.4);
-    }
-
-    /* STATION LIST / MAP WRAPPERS */
-    #stations-list-view {
-      margin-top: 4px;
-      display: none;
-    }
-
-    #stations-map-view {
-      margin-top: 4px;
-    }
-
-    #stations-map {
-      width: 100%;
-      height: 380px;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid var(--border-strong);
-    }
-
-    /* STATION LIST */
-    #stations-list {
-      margin-top: 4px;
-    }
-
-    .station-item {
-      display: flex;
-      justify-content: space-between;
-      gap: 14px;
-      padding: 12px 10px;
-      border-radius: 14px;
-      border: 1px solid transparent;
-      transition: transform 0.16s ease, box-shadow 0.16s ease,
-        background-color 0.16s ease, border-color 0.16s ease;
-      animation: fadeInUp 0.32s ease both;
-    }
-
-    .station-item:nth-child(2) {
-      animation-delay: 0.03s;
-    }
-    .station-item:nth-child(3) {
-      animation-delay: 0.06s;
-    }
-    .station-item:nth-child(4) {
-      animation-delay: 0.09s;
-    }
-
-    .station-item:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-hover);
-      background-color: #f9fafb;
-      border-color: var(--border);
-    }
-
-    .station-item + .station-item {
-      margin-top: 6px;
-    }
-
-    .station-main {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .station-header-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 4px;
-    }
-
-    .station-name {
-      font-size: 0.98rem;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .station-badges {
-      display: inline-flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-
-    .badge {
-      font-size: 0.7rem;
-      padding: 2px 7px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      background: #f9fafb;
-    }
-
-    .badge-owner {
-      border-color: rgba(34, 197, 94, 0.8);
-      color: var(--good);
-      background: rgba(34, 197, 94, 0.08);
-    }
-
-    .badge-updated {
-      border-color: rgba(148, 163, 184, 0.9);
-      background: #f9fafb;
-    }
-
-    .station-meta {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    .price-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 4px;
-    }
-
-    .price-pill {
-      background: var(--accent-soft);
-      color: var(--accent);
-      padding: 5px 10px;
-      border-radius: 999px;
-      font-size: 0.76rem;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      border: 1px solid rgba(191, 219, 254, 0.9);
-      transform: translateY(0);
-      transition: transform 0.14s ease, box-shadow 0.14s ease,
-        background-color 0.14s ease;
-    }
-
-    .price-pill span.grade {
-      text-transform: uppercase;
+    .card-title {
+      font-size: 14px;
       font-weight: 600;
     }
 
-    .price-pill:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.28);
-      background-color: var(--accent-soft-strong);
-    }
-
-    .spread-text {
-      font-size: 0.8rem;
+    .card-subtitle {
+      font-size: 12px;
+      opacity: 0.7;
       margin-top: 2px;
     }
 
-    .spread-positive {
-      color: var(--bad);
-    }
-    .spread-negative {
-      color: var(--good);
-    }
-    .spread-neutral {
-      color: var(--muted);
+    .pill-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.04);
+      border: 1px solid rgba(148, 163, 184, 0.2);
     }
 
-    .station-map {
-      width: 74px;
-      height: 74px;
-      border-radius: var(--radius-map);
+    .pill-toggle {
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      opacity: 0.7;
+      transition: background var(--transition-fast), color var(--transition-fast),
+        opacity var(--transition-fast);
+    }
+
+    .pill-toggle.active {
+      background: var(--accent);
+      color: white;
+      opacity: 1;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.6);
+    }
+
+    /* Map & List */
+
+    #map-container {
+      width: 100%;
+      height: 420px;
+      border-radius: 18px;
       overflow: hidden;
-      flex-shrink: 0;
-      border: 1px solid var(--border-strong);
-      background: linear-gradient(135deg, #e5e7eb, #f9fafb);
+      margin-top: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: radial-gradient(circle at center, #1e293b, #020617);
+    }
+
+    #stations-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+      max-height: 420px;
+      overflow: auto;
+    }
+
+    .station-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) 150px;
+      gap: 10px;
+      padding: 10px 10px;
+      border-radius: 16px;
+      background: rgba(15, 23, 42, 0.02);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      cursor: pointer;
+      transition: transform 90ms ease-out, box-shadow 90ms ease-out,
+        border-color 120ms ease-out;
+    }
+
+    .station-row:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.35);
+      border-color: rgba(37, 99, 235, 0.75);
+    }
+
+    .station-main {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .station-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .station-meta {
+      font-size: 11px;
+      opacity: 0.82;
+    }
+
+    .tag {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      border-radius: 999px;
+      padding: 2px 6px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: rgba(15, 23, 42, 0.04);
+    }
+
+    .tag-owner {
+      border-color: rgba(34, 197, 94, 0.7);
+      color: #22c55e;
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    .station-prices {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .price-pill {
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 2px 6px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.02);
+    }
+
+    .price-pill strong {
+      font-weight: 700;
+    }
+
+    .station-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      font-size: 11px;
+      opacity: 0.85;
+    }
+
+    .mini-map {
+      width: 100%;
+      height: 100px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #020617, #1e293b);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.65rem;
-      color: var(--muted);
-      cursor: pointer;
+      font-size: 11px;
+      color: rgba(148, 163, 184, 0.9);
     }
 
-    .station-map img {
+    .mini-map img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
 
-    .station-item.home-station {
-      border-color: rgba(34, 197, 94, 0.85);
-      background: linear-gradient(
-        135deg,
-        rgba(34, 197, 94, 0.08),
-        rgba(209, 250, 229, 0.2)
-      );
-    }
+    /* Right column card */
 
-    .station-item.home-station .station-name {
-      color: #166534;
-    }
-
-    /* RIGHT COLUMN – FORMS */
-    .tab-buttons {
-      display: inline-flex;
-      gap: 6px;
-      padding: 3px;
-      border-radius: 999px;
-      background: #f3f4f6;
-      border: 1px solid var(--border);
-      margin-bottom: 14px;
-    }
-
-    .tab-btn {
-      padding: 7px 14px;
-      border-radius: 999px;
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      font-size: 0.86rem;
-      cursor: pointer;
-      transition: background-color 0.16s ease, color 0.16s ease,
-        transform 0.12s ease;
-      white-space: nowrap;
-    }
-
-    .tab-btn.active {
-      background: #ffffff;
-      color: var(--accent);
-      font-weight: 600;
-      transform: translateY(-1px);
-      box-shadow: 0 6px 14px rgba(148, 163, 184, 0.4);
-    }
-
-    .tab-section {
-      opacity: 0;
-      max-height: 0;
-      overflow: hidden;
-      transform: translateY(4px);
-      transition: opacity 0.18s ease, max-height 0.18s ease,
-        transform 0.18s ease;
-    }
-
-    .tab-section.active {
-      opacity: 1;
-      max-height: 1200px;
-      transform: translateY(0);
-    }
-
-    .form-group {
-      margin-bottom: 12px;
+    .control-stack {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 10px;
+      margin-top: 8px;
     }
 
-    label {
-      font-size: 0.82rem;
-      color: var(--muted);
+    .control-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
     }
 
-    .required-dot {
-      color: #ef4444;
-      margin-left: 2px;
+    .control-row label {
+      font-size: 11px;
+      opacity: 0.8;
     }
 
-    input,
-    select,
-    textarea {
-      padding: 9px 11px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      outline: none;
-      font-size: 0.9rem;
-      background: #ffffff;
-      transition: border-color 0.14s ease, box-shadow 0.14s ease,
-        background-color 0.14s ease;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
-      background-color: #f9fafb;
-    }
-
-    textarea {
-      min-height: 70px;
-      resize: vertical;
-    }
-
-    .helper {
-      font-size: 0.74rem;
-      color: var(--muted);
-    }
-
-    button.submit-btn {
-      margin-top: 6px;
-      padding: 10px 16px;
+    .control-row input[type="range"] {
       width: 100%;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    }
+
+    .text-input,
+    .select-input {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 7px 8px;
+      font-size: 13px;
+      background: rgba(15, 23, 42, 0.03);
+      color: inherit;
+    }
+
+    .text-input:focus,
+    .select-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.4);
+      background: rgba(15, 23, 42, 0.06);
+    }
+
+    .small-caption {
+      font-size: 11px;
+      opacity: 0.74;
+    }
+
+    .primary-btn {
+      border-radius: 999px;
+      padding: 9px 14px;
       border: none;
-      color: #eff6ff;
+      background: var(--accent-gradient);
+      color: white;
       font-weight: 600;
-      font-size: 0.94rem;
+      font-size: 13px;
       cursor: pointer;
-      transition: transform 0.14s ease, box-shadow 0.14s ease,
-        opacity 0.14s ease;
-      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.55);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 14px 32px rgba(37, 99, 235, 0.7);
+      margin-top: 4px;
+      width: 100%;
+      transition: transform 80ms ease-out, box-shadow 80ms ease-out,
+        filter 100ms ease-out;
     }
 
-    button.submit-btn:hover {
+    .primary-btn:hover {
       transform: translateY(-1px);
-      box-shadow: 0 14px 26px rgba(37, 99, 235, 0.65);
+      filter: brightness(1.05);
+      box-shadow: 0 16px 36px rgba(37, 99, 235, 0.9);
     }
 
-    button.submit-btn:active {
-      transform: translateY(0);
-      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.5);
-      opacity: 0.96;
+    .primary-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.65);
     }
 
-    /* MODAL MAP OVERLAY */
-    .modal-overlay {
+    .pill-counter {
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 4px 9px;
+      background: rgba(15, 23, 42, 0.06);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
+
+    /* Modal */
+
+    .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.68);
-      display: flex;
+      background: rgba(15, 23, 42, 0.72);
+      display: none;
       align-items: center;
       justify-content: center;
       z-index: 50;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.18s ease;
     }
 
-    .modal-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
+    .modal-backdrop.active {
+      display: flex;
     }
 
-    .modal-content {
-      width: min(900px, 100% - 32px);
-      height: min(520px, 100% - 80px);
-      background: #ffffff;
-      border-radius: 20px;
-      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.8);
+    .modal-card {
+      width: min(720px, 96vw);
+      max-height: 90vh;
+      background: var(--card-bg);
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      padding: 14px 16px 12px;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      gap: 8px;
     }
 
     .modal-header {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border);
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      align-items: center;
     }
 
     .modal-title {
-      font-size: 0.98rem;
       font-weight: 600;
-      color: var(--text);
+      font-size: 15px;
     }
 
-    .modal-subtitle {
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-
-    .modal-close {
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      width: 28px;
-      height: 28px;
+    .icon-btn {
       border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      width: 26px;
+      height: 26px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
-      color: var(--muted);
-      transition: background-color 0.14s ease, color 0.14s ease;
+      background: rgba(15, 23, 42, 0.1);
+      cursor: pointer;
+      font-size: 14px;
     }
 
-    .modal-close:hover {
-      background: #f3f4f6;
-      color: var(--text);
+    #full-map {
+      width: 100%;
+      height: 320px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      margin-top: 6px;
     }
 
-    #map-modal-map {
+    .modal-body {
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .modal-body-col {
       flex: 1;
+      min-width: 220px;
     }
 
-    .map-error {
-      padding: 14px;
-      font-size: 0.85rem;
-      color: var(--muted);
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 12px;
     }
 
-    /* ANIMATIONS */
-    @keyframes fadeInUp {
-      from {
+    .secondary-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      padding: 7px 12px;
+      background: rgba(15, 23, 42, 0.02);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: inherit;
+    }
+
+    .secondary-btn:hover {
+      background: rgba(148, 163, 184, 0.18);
+    }
+
+    /* Simple pulsing ring for Shields */
+
+    .shields-pulse {
+      position: absolute;
+      width: 46px;
+      height: 46px;
+      border-radius: 999px;
+      border: 2px solid rgba(59, 130, 246, 0.75);
+      background: radial-gradient(circle, rgba(96, 165, 250, 0.4), transparent);
+      animation: pulse-ring 1.6s infinite ease-out;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+    }
+
+    @keyframes pulse-ring {
+      0% {
+        transform: translate(-50%, -50%) scale(0.2);
+        opacity: 0.85;
+      }
+      70% {
+        transform: translate(-50%, -50%) scale(1);
         opacity: 0;
-        transform: translateY(6px);
       }
-      to {
-        opacity: 1;
-        transform: translateY(0);
+      100% {
+        transform: translate(-50%, -50%) scale(1.05);
+        opacity: 0;
       }
     }
 
-    /* RESPONSIVE TWEAKS */
-    @media (max-width: 640px) {
-      .header {
-        padding-inline: 16px;
+    /* Toast */
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      border-radius: 14px;
+      padding: 8px 12px;
+      font-size: 12px;
+      background: rgba(15, 23, 42, 0.95);
+      color: #e5e7eb;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75);
+      z-index: 60;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast.active {
+      display: inline-flex;
+    }
+
+    .toast-pill {
+      border-radius: 999px;
+      padding: 2px 7px;
+      font-size: 11px;
+      background: rgba(37, 99, 235, 0.42);
+    }
+
+    /* Mobile tweaks */
+
+    @media (max-width: 768px) {
+      .tarcart-shell {
+        grid-template-columns: minmax(0, 1fr);
       }
-      .container {
-        padding-inline: 16px;
+
+      .tarcart-sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: 260px;
+        transform: translateX(-100%);
+        transition: transform 180ms ease-out;
+        z-index: 20;
       }
-      .card {
-        padding-inline: 16px;
+
+      .tarcart-shell.sidebar-open .tarcart-sidebar {
+        transform: translateX(0);
       }
-      .station-item {
-        flex-direction: row;
+
+      .tarcart-main {
+        grid-column: 1 / -1;
       }
-      .station-map {
-        width: 64px;
-        height: 64px;
-      }
-      #stations-map {
-        height: 320px;
-      }
-      .modal-content {
-        width: 100%;
-        height: 100%;
-        border-radius: 0;
+
+      .sidebar-collapse-btn {
+        display: none;
       }
     }
   </style>
-
-  <!-- Leaflet for full-screen map -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""
-  />
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""
-  ></script>
-
-  <!-- Google Maps JS (replace YOUR_GOOGLE_MAPS_API_KEY_HERE with your real key) -->
-  <script>
-    window.tarcartGoogleMapsLoaded = false;
-    function tarcartGoogleMapsInit() {
-      window.tarcartGoogleMapsLoaded = true;
-      if (window.ensureGoogleMap) {
-        window.ensureGoogleMap();
-      }
-    }
-  </script>
-  <script
-    async
-    defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApe83XPa6MNovCFytBZv0TICBqed7lPI8&callback=tarcartGoogleMapsInit"
-  ></script>
 </head>
-
 <body>
-  <!-- HEADER -->
-  <header class="header">
-    <div class="header-logo">TA</div>
-    <div class="header-title-block">
-      <div class="header-title">Tarcart – Local Gas Prices</div>
-      <div class="header-subtitle">
-        Live view of Shields Bazaar and nearby competitor gas prices.
+  <div class="tarcart-shell" id="tarcart-shell">
+    <!-- Sidebar -->
+    <aside class="tarcart-sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <!-- Place your transparent logo here -->
+          <img src="/assets/img/tarcart-logo.png" alt="Tarcart logo" />
+        </div>
+        <div class="sidebar-title-block">
+          <div class="sidebar-title">Tarcart</div>
+          <div class="sidebar-subtitle">Shields Bazaar · Ops Console</div>
+        </div>
       </div>
-    </div>
-  </header>
 
-  <!-- MAIN CONTENT -->
-  <main class="container">
-    <!-- LEFT: STATIONS LIST / MAP -->
-    <section class="card">
-      <h2>Stations near you</h2>
-      <p class="card-subtitle">
-        Shields and nearby competitors. Prices are community reported and may
-        vary at the pump.
-      </p>
+      <button class="sidebar-collapse-btn" id="sidebar-collapse-btn">
+        ‹
+      </button>
 
-      <div class="view-toggle">
-        <button class="view-toggle-btn" data-view="list">
-          List view
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Views</div>
+        <button
+          class="sidebar-nav-btn active"
+          data-view="map"
+          id="nav-map-view"
+        >
+          <span class="sidebar-nav-icon">🗺️</span>
+          <span class="sidebar-nav-label">Map view</span>
         </button>
-        <button class="view-toggle-btn active" data-view="map">
-          Google Map view
+        <button class="sidebar-nav-btn" data-view="list" id="nav-list-view">
+          <span class="sidebar-nav-icon">📋</span>
+          <span class="sidebar-nav-label">List view</span>
         </button>
-      </div>
 
-      <div id="stations-list-view">
-        <div id="stations-list">Loading stations…</div>
-      </div>
-
-      <div id="stations-map-view">
-        <div id="stations-map"></div>
-      </div>
-    </section>
-
-    <!-- RIGHT: FORMS -->
-    <section class="card">
-      <h2>Contribute prices</h2>
-      <p class="card-subtitle">
-        Help keep prices fresh by submitting live updates or suggesting a new
-        station.
-      </p>
-
-      <div class="tab-buttons">
-        <button class="tab-btn active" data-target="price-update-form">
-          Submit price
+        <div class="sidebar-section-label">Data</div>
+        <button class="sidebar-nav-btn" id="nav-refresh">
+          <span class="sidebar-nav-icon">🔄</span>
+          <span class="sidebar-nav-label">Refresh data</span>
         </button>
-        <button class="tab-btn" data-target="station-submit-form">
-          Add station
+
+        <div class="sidebar-section-label">Admin</div>
+        <button class="sidebar-nav-btn" id="nav-admin">
+          <span class="sidebar-nav-icon">🛠</span>
+          <span class="sidebar-nav-label">Admin panel</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span class="sidebar-footer-text">Auto theme</span>
+        <button class="sidebar-theme-toggle" id="theme-toggle">
+          <span>🌤</span>
+          <span>System</span>
         </button>
       </div>
+    </aside>
 
-      <!-- PRICE UPDATE FORM -->
-      <div id="price-update-form" class="tab-section active">
-        <div class="form-group">
-          <label for="station-select">
-            Choose a station<span class="required-dot">*</span>
-          </label>
-          <select id="station-select"></select>
-          <div class="helper">
-            Pick the station you are standing at or driving past.
+    <!-- Main area -->
+    <main class="tarcart-main">
+      <header class="tarcart-header">
+        <div class="header-left">
+          <div class="header-title">Tarcart – Local Gas Prices</div>
+          <div class="header-subtitle">
+            Live prices at <strong>Shields Bazaar Fuel Center</strong> and
+            nearby stations.
           </div>
         </div>
-
-        <div class="form-group">
-          <label for="grade-select">
-            Fuel grade<span class="required-dot">*</span>
-          </label>
-          <select id="grade-select">
-            <option value="reg">Regular 87</option>
-            <option value="mid">Midgrade 89</option>
-            <option value="prem">Premium 93</option>
-            <option value="diesel">Diesel</option>
-          </select>
+        <div class="header-controls">
+          <div class="chip">
+            <span class="dot"></span>
+            <span id="header-status-text">Connected</span>
+          </div>
+          <div class="chip-outline">
+            ⭐ Shields is home · North Miami Beach, FL
+          </div>
         </div>
+      </header>
 
-        <div class="form-group">
-          <label for="price-input">
-            Price per gallon<span class="required-dot">*</span>
-          </label>
-          <input
-            type="number"
-            step="0.001"
-            id="price-input"
-            placeholder="3.259"
-          />
-          <div class="helper">Enter price exactly as shown on the sign.</div>
+      <section class="tarcart-content">
+        <div class="tarcart-grid">
+          <!-- Left: Map/List -->
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Stations near you</div>
+                <div class="card-subtitle">
+                  Shields + competitors within your chosen radius.
+                </div>
+              </div>
+              <div class="pill-row">
+                <button
+                  class="pill-toggle active"
+                  id="toggle-map-view"
+                  data-view="map"
+                >
+                  Map view
+                </button>
+                <button
+                  class="pill-toggle"
+                  id="toggle-list-view"
+                  data-view="list"
+                >
+                  List view
+                </button>
+              </div>
+            </div>
+            <div id="map-container"></div>
+            <div id="stations-list" style="display: none"></div>
+          </section>
+
+          <!-- Right: Controls -->
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Contribute & filter</div>
+                <div class="card-subtitle">
+                  Search, filter by radius, and view station details.
+                </div>
+              </div>
+              <span class="pill-counter"
+                ><span id="station-count">0</span> stations</span
+              >
+            </div>
+
+            <div class="control-stack">
+              <div class="control-row">
+                <label for="search-input">Search stations</label>
+                <input
+                  id="search-input"
+                  class="text-input"
+                  type="text"
+                  placeholder="Search by name, brand, or address..."
+                />
+                <div class="small-caption">
+                  Try “Shields”, “Exxon”, or “Costco”.
+                </div>
+              </div>
+
+              <div class="control-row">
+                <label for="radius-input"
+                  >Radius from Shields (<span id="radius-label">5</span> mi)</label
+                >
+                <input
+                  id="radius-input"
+                  type="range"
+                  min="1"
+                  max="25"
+                  value="5"
+                />
+                <div class="small-caption">
+                  Only stations within this distance from Shields are shown.
+                </div>
+              </div>
+
+              <div class="control-row">
+                <label>Quick actions</label>
+                <button class="primary-btn" id="btn-center-shields">
+                  <span>⭐ Center on Shields</span>
+                </button>
+              </div>
+            </div>
+          </section>
         </div>
+      </section>
+    </main>
+  </div>
 
-        <div class="form-group">
-          <label for="notes-input">Notes (optional)</label>
-          <textarea
-            id="notes-input"
-            placeholder="Examples: Cash price only, with car wash, discount with rewards, etc."
-          ></textarea>
-        </div>
-
-        <button class="submit-btn" id="submit-price-btn">
-          Submit price update
-        </button>
-      </div>
-
-      <!-- ADD STATION FORM -->
-      <div id="station-submit-form" class="tab-section">
-        <div class="form-group">
-          <label for="new-name">
-            Station name<span class="required-dot">*</span>
-          </label>
-          <input
-            type="text"
-            id="new-name"
-            placeholder="Marathon - Biscayne Blvd"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="new-brand">
-            Brand<span class="required-dot">*</span>
-          </label>
-          <input
-            type="text"
-            id="new-brand"
-            placeholder="Marathon, Chevron, Shell, Shields, etc."
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="new-address">
-            Street address<span class="required-dot">*</span>
-          </label>
-          <input
-            type="text"
-            id="new-address"
-            placeholder="12300 Biscayne Blvd"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="new-city">
-            City<span class="required-dot">*</span>
-          </label>
-          <input
-            type="text"
-            id="new-city"
-            placeholder="North Miami Beach"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="new-state">
-            State<span class="required-dot">*</span>
-          </label>
-          <input type="text" id="new-state" maxlength="2" placeholder="FL" />
-        </div>
-
-        <button class="submit-btn" id="submit-station-btn">
-          Submit new station
-        </button>
-      </div>
-    </section>
-  </main>
-
-  <!-- FULLSCREEN MAP MODAL -->
-  <div id="map-modal" class="modal-overlay" aria-hidden="true">
-    <div class="modal-content">
+  <!-- Station details modal -->
+  <div class="modal-backdrop" id="station-modal">
+    <div class="modal-card">
       <div class="modal-header">
         <div>
-          <div class="modal-title" id="map-modal-title">Station</div>
-          <div class="modal-subtitle" id="map-modal-subtitle"></div>
+          <div class="modal-title" id="modal-title"></div>
+          <div class="small-caption" id="modal-subtitle"></div>
         </div>
-        <button
-          type="button"
-          class="modal-close"
-          id="map-modal-close"
-          aria-label="Close map"
-        >
-          ✕
-        </button>
+        <button class="icon-btn" id="modal-close-btn">✕</button>
       </div>
-      <div id="map-modal-map">
-        <div class="map-error">Loading map…</div>
+      <div id="full-map"></div>
+      <div class="modal-body">
+        <div class="modal-body-col" id="modal-prices"></div>
+        <div class="modal-body-col" id="modal-meta"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="secondary-btn" id="modal-directions-btn">
+          🧭 Open in Google Maps
+        </button>
       </div>
     </div>
   </div>
 
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="toast-pill">Tarcart</span>
+    <span id="toast-text"></span>
+  </div>
+
   <script>
-    const API = "https://octopus-app-v54dv.ondigitalocean.app";
-    const HOME_STATION_KEYWORD = "shields";
+    // --- Basic store & helpers -------------------------------------------------
 
-    let leafletMap = null;
-    let googleMap = null;
-    let googleMarkers = [];
-    let tarcartStations = [];
+    const TarcartStore = {
+      stations: [],
+      filteredStations: [],
+      shieldsStation: null,
+      view: "map",
+      radiusMiles: 5,
+      searchQuery: "",
+      googleReady: false,
+      map: null,
+      markers: [],
+      markerCluster: null,
+      shieldsMarker: null,
+      shieldsPulseDiv: null,
+      mapBounds: null,
+    };
 
-    function formatPriceFromCents(cents) {
-      if (cents == null) return null;
-      return "$" + (cents / 100).toFixed(3);
+    const API_BASE = ""; // same origin
+
+    const HOME_STATION_ID = 1; // from your DB (id: 1 is Shields)
+    const SHIELDS_COORDS = { lat: 25.88951, lng: -80.16406 }; // fixed
+
+    function showToast(message, timeout = 2600) {
+      const toast = document.getElementById("toast");
+      const text = document.getElementById("toast-text");
+      text.textContent = message;
+      toast.classList.add("active");
+      setTimeout(() => toast.classList.remove("active"), timeout);
     }
 
-    function formatRelativeTime(iso) {
-      if (!iso) return "Recently updated";
-      const then = new Date(iso);
-      if (Number.isNaN(then.getTime())) return "Recently updated";
-      const now = new Date();
-      const diffMs = now - then;
-      const diffMins = Math.floor(diffMs / (1000 * 60));
-      const diffHours = Math.floor(diffMins / 60);
-      const diffDays = Math.floor(diffHours / 24);
-
-      if (diffMins < 1) return "Updated just now";
-      if (diffMins < 60) return `Updated ${diffMins} min ago`;
-      if (diffHours < 24) return `Updated ${diffHours} hr ago`;
-      if (diffDays === 1) return "Updated 1 day ago";
-      return `Updated ${diffDays} days ago`;
+    function dollarsFromCents(cents) {
+      if (cents == null) return "—";
+      return (cents / 100).toFixed(3);
     }
 
-    function latLonToTile(lat, lon, zoom) {
-      const z = Math.pow(2, zoom);
-      const x = Math.floor(((lon + 180) / 360) * z);
-      const latRad = (lat * Math.PI) / 180;
-      const y = Math.floor(
-        ((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) *
-          z
+    function distanceMiles(lat1, lon1, lat2, lon2) {
+      const R = 3958.8;
+      const toRad = (deg) => (deg * Math.PI) / 180;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) *
+          Math.cos(toRad(lat2)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    function applyThemeFromPreference() {
+      const stored = localStorage.getItem("tarcart-theme");
+      if (stored === "light" || stored === "dark") {
+        document.documentElement.setAttribute("data-theme", stored);
+        return stored;
+      }
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      document.documentElement.setAttribute(
+        "data-theme",
+        prefersDark ? "dark" : "light"
       );
-      return { x, y };
+      return "auto";
     }
 
-    function getTileUrl(lat, lon, zoom = 15) {
-      const { x, y } = latLonToTile(lat, lon, zoom);
-      return `https://tile.openstreetmap.org/${zoom}/${x}/${y}.png`;
+    function toggleThemeMode() {
+      const current = document.documentElement.getAttribute("data-theme");
+      let next;
+      if (current === "light") next = "dark";
+      else if (current === "dark") next = "light";
+      else next = "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("tarcart-theme", next);
+      const toggle = document.getElementById("theme-toggle");
+      const label = toggle.querySelector("span:last-child");
+      if (next === "dark") label.textContent = "Dark";
+      else if (next === "light") label.textContent = "Light";
+      else label.textContent = "System";
     }
 
-    // Build a Google Static Maps URL for mini-map previews
-    function getGoogleStaticMapUrl(lat, lon, zoom = 15) {
-      const base = "https://maps.googleapis.com/maps/api/staticmap";
-      const params = [
-        "center=" + lat + "," + lon,
-        "zoom=" + zoom,
-        "size=160x160",
-        "scale=2",
-        "maptype=roadmap",
-        "markers=size:mid|color:red|" + lat + "," + lon,
-        // IMPORTANT: this key should match the one used for the JS Maps API tag above.
-        "key=AIzaSyApe83XPa6MNovCFytBZv0TICBqed7lPI8"
-      ];
-      return base + "?" + params.join("&");
+    // --- API -------------------------------------------------------------------
+
+    async function fetchStations() {
+      const res = await fetch(API_BASE + "/api/stations");
+      if (!res.ok) throw new Error("Failed to load stations");
+      const stations = await res.json();
+      console.log("Stations from /api/stations", stations);
+      return stations;
     }
 
-    function getCachedCoords(stationId) {
-      try {
-        const raw = localStorage.getItem("tarcart_coords_" + stationId);
-        if (!raw) return null;
-        const parsed = JSON.parse(raw);
-        if (typeof parsed.lat === "number" && typeof parsed.lon === "number") {
-          return parsed;
-        }
-      } catch (e) {
-        console.warn("Failed to parse cached coords", e);
-      }
-      return null;
-    }
+    // --- Map logic -------------------------------------------------------------
 
-    function setCachedCoords(stationId, lat, lon) {
-      try {
-        localStorage.setItem(
-          "tarcart_coords_" + stationId,
-          JSON.stringify({ lat, lon })
-        );
-      } catch (e) {
-        console.warn("Failed to cache coords", e);
+    function tarcartOnGoogleMapsReady() {
+      // called by Google Maps callback
+      TarcartStore.googleReady = true;
+      if (TarcartStore.stations.length) {
+        initMap();
+        syncMapMarkers();
       }
     }
+    window.tarcartOnGoogleMapsReady = tarcartOnGoogleMapsReady;
 
-    async function geocodeStation(station) {
-      // Special-case overrides for map accuracy:
-      // 1) Shields (home station) -> fixed known coordinates
-      // 2) 1900 NE 123rd St -> fixed North Miami address
-      let addressString;
-
-      const nameLower = (station.name || "").toLowerCase();
-      const rawAddress = (station.address || "").toLowerCase();
-
-      // If this is Shields (owner station), return fixed coordinates directly.
-      if (nameLower.includes("shields")) {
-        const coords = { lat: 25.88951, lon: -80.16406 };
-        try {
-          setCachedCoords(station.id, coords.lat, coords.lon);
-        } catch (e) {
-          console.warn("Failed to cache Shields coords", e);
-        }
-        return coords;
-      } else if (rawAddress.includes("1900 ne 123rd st")) {
-        addressString = "1900 NE 123rd St, North Miami, FL 33181";
-      } else {
-        addressString = [station.address, station.city, station.state]
-          .filter(Boolean)
-          .join(", ");
-      }
-
-      if (!addressString) return null;
-
-      const url =
-        "https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" +
-        encodeURIComponent(addressString);
-
-      try {
-        const res = await fetch(url, {
-          headers: {
-            Accept: "application/json",
-          },
-        });
-        if (!res.ok) {
-          console.warn("Geocoding failed", res.status);
-          return null;
-        }
-        const data = await res.json();
-        if (!Array.isArray(data) || data.length === 0) return null;
-        const item = data[0];
-        const lat = parseFloat(item.lat);
-        const lon = parseFloat(item.lon);
-        if (Number.isNaN(lat) || Number.isNaN(lon)) return null;
-        return { lat, lon };
-      } catch (e) {
-        console.warn("Error geocoding station", e);
-        return null;
-      }
-    }
-
-    async function setMapPreview(station, container) {
+    function initMap() {
+      if (!TarcartStore.googleReady) return;
+      const container = document.getElementById("map-container");
       if (!container) return;
+      TarcartStore.map = new google.maps.Map(container, {
+        center: SHIELDS_COORDS,
+        zoom: 12,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: true,
+        styles: [],
+      });
 
-      // First try cached coordinates
-      let coords = getCachedCoords(station.id);
-      if (!coords) {
-        container.textContent = "Locating…";
-        coords = await geocodeStation(station);
-        if (!coords) {
-          container.textContent = "No map";
-          return;
-        }
-        setCachedCoords(station.id, coords.lat, coords.lon);
-      }
-
-      const imgUrl = getGoogleStaticMapUrl(coords.lat, coords.lon, 15);
-      container.innerHTML =
-        '<img src="' +
-        imgUrl +
-        '" alt="Map preview for ' +
-        (station.name || "station") +
-        '" />';
+      // Basic traffic toggle (optional later)
+      // const trafficLayer = new google.maps.TrafficLayer();
+      // trafficLayer.setMap(TarcartStore.map);
     }
 
-    async function openMapModal(station) {
-      const overlay = document.getElementById("map-modal");
-      const titleEl = document.getElementById("map-modal-title");
-      const subtitleEl = document.getElementById("map-modal-subtitle");
-      const mapContainer = document.getElementById("map-modal-map");
-
-      titleEl.textContent = station.name || "Station";
-      const subtitleParts = [];
-      if (station.address) subtitleParts.push(station.address);
-      if (station.city || station.state) {
-        subtitleParts.push(
-          [station.city, station.state].filter(Boolean).join(", ")
+    function clearMarkers() {
+      TarcartStore.markers.forEach((m) => m.setMap(null));
+      TarcartStore.markers = [];
+      if (TarcartStore.markerCluster) {
+        TarcartStore.markerCluster.clearMarkers();
+        TarcartStore.markerCluster = null;
+      }
+      if (TarcartStore.shieldsMarker) {
+        TarcartStore.shieldsMarker.setMap(null);
+        TarcartStore.shieldsMarker = null;
+      }
+      if (TarcartStore.shieldsPulseDiv && TarcartStore.shieldsPulseDiv.parentNode) {
+        TarcartStore.shieldsPulseDiv.parentNode.removeChild(
+          TarcartStore.shieldsPulseDiv
         );
+        TarcartStore.shieldsPulseDiv = null;
       }
-      subtitleEl.textContent = subtitleParts.join(" • ");
-
-      overlay.setAttribute("aria-hidden", "false");
-      overlay.classList.add("active");
-      mapContainer.innerHTML = '<div class="map-error">Loading map…</div>';
-
-      let coords = getCachedCoords(station.id);
-      if (!coords) {
-        coords = await geocodeStation(station);
-        if (!coords) {
-          mapContainer.innerHTML =
-            '<div class="map-error">Unable to locate this station on the map.</div>';
-          return;
-        }
-        setCachedCoords(station.id, coords.lat, coords.lon);
-      }
-
-      mapContainer.innerHTML = "";
-
-      if (leafletMap) {
-        leafletMap.remove();
-        leafletMap = null;
-      }
-
-      const isOwner =
-        (station.name || "").toLowerCase().includes(HOME_STATION_KEYWORD) ||
-        station.verified_owner === true;
-
-      leafletMap = L.map(mapContainer).setView([coords.lat, coords.lon], 16);
-
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      }).addTo(leafletMap);
-
-      let markerOptions = {};
-      if (isOwner && window.L && L.icon) {
-        const starIcon = L.icon({
-          iconUrl: "https://maps.google.com/mapfiles/kml/shapes/star.png",
-          iconSize: [32, 32],
-          iconAnchor: [16, 32],
-          popupAnchor: [0, -28],
-        });
-        markerOptions.icon = starIcon;
-      }
-
-      L.marker([coords.lat, coords.lon], markerOptions).addTo(leafletMap);
     }
 
-    function initModalClose() {
-      const overlay = document.getElementById("map-modal");
-      const closeBtn = document.getElementById("map-modal-close");
-      if (!overlay || !closeBtn) return;
+    function syncMapMarkers() {
+      if (!TarcartStore.map) return;
+      clearMarkers();
 
-      const closeModal = () => {
-        overlay.classList.remove("active");
-        overlay.setAttribute("aria-hidden", "true");
+      const g = window.google;
+      if (!g || !g.maps) return;
+
+      const bounds = new g.maps.LatLngBounds();
+      let shieldsPoint = null;
+
+      const filtered = TarcartStore.filteredStations;
+      const markers = [];
+
+      filtered.forEach((st) => {
+        const isShields = st.id === HOME_STATION_ID || st.is_home === true;
+        const lat = st.latitude ?? st.lat ?? null;
+        const lng = st.longitude ?? st.lon ?? null;
+
+        // Fallback to SHIELDS_COORDS if missing and it's Shields
+        const pos = isShields
+          ? SHIELDS_COORDS
+          : lat != null && lng != null
+          ? { lat, lng }
+          : null;
+
+        if (!pos) return;
+
+        const marker = new g.maps.Marker({
+          position: pos,
+          map: TarcartStore.map,
+          title: st.name || "Station",
+          icon: isShields
+            ? {
+                url: "https://maps.google.com/mapfiles/kml/shapes/star.png",
+                scaledSize: new g.maps.Size(32, 32),
+              }
+            : undefined,
+        });
+
+        marker._station = st;
+        markers.push(marker);
+        bounds.extend(pos);
+
+        g.maps.event.addListener(marker, "click", () => {
+          openStationModal(st);
+        });
+
+        if (isShields) {
+          TarcartStore.shieldsMarker = marker;
+          shieldsPoint = pos;
+        }
+      });
+
+      TarcartStore.markers = markers;
+
+      if (!bounds.isEmpty()) {
+        TarcartStore.map.fitBounds(bounds);
+      } else {
+        TarcartStore.map.setCenter(SHIELDS_COORDS);
+        TarcartStore.map.setZoom(12);
+      }
+
+      // Simple clustering for non-Shields markers
+      const clustererLibrary = window.markerClusterer;
+      if (clustererLibrary && markers.length > 1) {
+        TarcartStore.markerCluster = new markerClusterer.MarkerClusterer({
+          map: TarcartStore.map,
+          markers: markers.filter((m) => m !== TarcartStore.shieldsMarker),
+        });
+      }
+
+      // Add pulsing halo overlay for Shields
+      if (shieldsPoint) {
+        const overlay = new g.maps.OverlayView();
+        overlay.onAdd = function () {
+          const div = document.createElement("div");
+          div.className = "shields-pulse";
+          TarcartStore.shieldsPulseDiv = div;
+          const panes = this.getPanes();
+          panes.overlayMouseTarget.appendChild(div);
+        };
+        overlay.draw = function () {
+          const projection = this.getProjection();
+          const pos = projection.fromLatLngToDivPixel(
+            new g.maps.LatLng(shieldsPoint.lat, shieldsPoint.lng)
+          );
+          const div = TarcartStore.shieldsPulseDiv;
+          if (!div) return;
+          div.style.left = pos.x + "px";
+          div.style.top = pos.y + "px";
+        };
+        overlay.onRemove = function () {
+          if (TarcartStore.shieldsPulseDiv) {
+            TarcartStore.shieldsPulseDiv.remove();
+            TarcartStore.shieldsPulseDiv = null;
+          }
+        };
+        overlay.setMap(TarcartStore.map);
+      }
+    }
+
+    function centerOnShields() {
+      if (!TarcartStore.map) return;
+      TarcartStore.map.setCenter(SHIELDS_COORDS);
+      TarcartStore.map.setZoom(14);
+      showToast("Centered map on Shields.");
+    }
+
+    // --- List rendering --------------------------------------------------------
+
+    function getStaticMapUrl(lat, lng, zoom = 15) {
+      const key = new URL(
+        document.getElementById("gmaps-script").src
+      ).searchParams.get("key");
+      return (
+        "https://maps.googleapis.com/maps/api/staticmap?center=" +
+        lat +
+        "," +
+        lng +
+        "&zoom=" +
+        zoom +
+        "&size=320x200&scale=2&maptype=roadmap&markers=size:mid%7Ccolor:red%7C" +
+        lat +
+        "," +
+        lng +
+        "&key=" +
+        key
+      );
+    }
+
+    function renderStationList() {
+      const listEl = document.getElementById("stations-list");
+      listEl.innerHTML = "";
+      const stations = TarcartStore.filteredStations;
+      const countEl = document.getElementById("station-count");
+      countEl.textContent = stations.length;
+
+      stations.forEach((st) => {
+        const isShields = st.id === HOME_STATION_ID || st.is_home === true;
+
+        const row = document.createElement("div");
+        row.className = "station-row";
+
+        const main = document.createElement("div");
+        main.className = "station-main";
+
+        const name = document.createElement("div");
+        name.className = "station-name";
+        name.textContent = st.name || "Unknown station";
+
+        const meta = document.createElement("div");
+        meta.className = "station-meta";
+        meta.textContent =
+          (st.brand ? st.brand + " · " : "") +
+          (st.address || "") +
+          (st.city || st.state ? " · " : "") +
+          (st.city || "") +
+          (st.state ? ", " + st.state : "");
+
+        const metaRow = document.createElement("div");
+        metaRow.className = "station-meta-row";
+        const tag = document.createElement("span");
+        tag.className = "tag" + (isShields ? " tag-owner" : "");
+        tag.textContent = isShields ? "Owner · Shields" : "Community";
+
+        const distSpan = document.createElement("span");
+        distSpan.textContent =
+          st.distance != null ? st.distance.toFixed(1) + " mi" : "Distance n/a";
+
+        metaRow.appendChild(tag);
+        metaRow.appendChild(distSpan);
+
+        const prices = document.createElement("div");
+        prices.className = "station-prices";
+        const p87 = st.prices_cents?.["87"];
+        if (p87 != null) {
+          const pill = document.createElement("div");
+          pill.className = "price-pill";
+          pill.innerHTML = `<strong>87</strong> $${dollarsFromCents(p87)}`;
+          prices.appendChild(pill);
+        }
+
+        main.appendChild(name);
+        main.appendChild(meta);
+        main.appendChild(metaRow);
+        main.appendChild(prices);
+
+        const mini = document.createElement("div");
+        mini.className = "mini-map";
+
+        const lat = st.latitude ?? st.lat ?? (isShields ? SHIELDS_COORDS.lat : null);
+        const lng = st.longitude ?? st.lon ?? (isShields ? SHIELDS_COORDS.lng : null);
+
+        if (lat != null && lng != null && TarcartStore.googleReady) {
+          const img = document.createElement("img");
+          img.src = getStaticMapUrl(lat, lng, 15);
+          img.alt = "Mini map for " + (st.name || "station");
+          mini.appendChild(img);
+        } else {
+          mini.textContent = "Map not available";
+        }
+
+        row.appendChild(main);
+        row.appendChild(mini);
+
+        row.addEventListener("click", () => {
+          openStationModal(st);
+        });
+
+        listEl.appendChild(row);
+      });
+    }
+
+    // --- Modal -----------------------------------------------------------------
+
+    let modalMap = null;
+
+    function openStationModal(station) {
+      const backdrop = document.getElementById("station-modal");
+      backdrop.classList.add("active");
+
+      document.getElementById("modal-title").textContent =
+        station.name || "Station";
+      document.getElementById(
+        "modal-subtitle"
+      ).textContent = `${station.address || ""} ${
+        station.city || ""
+      } ${station.state || ""}`.trim();
+
+      const prices = document.getElementById("modal-prices");
+      prices.innerHTML = "<strong>Prices:</strong><br/>";
+      const p87 = station.prices_cents?.["87"];
+      prices.innerHTML +=
+        "Regular 87: " + (p87 != null ? "$" + dollarsFromCents(p87) : "—");
+
+      const meta = document.getElementById("modal-meta");
+      meta.innerHTML = "<strong>Meta:</strong><br/>";
+      meta.innerHTML +=
+        (station.brand ? "Brand: " + station.brand + "<br/>" : "") +
+        (station.is_home ? "Verified Shields station<br/>" : "");
+
+      const fullMapEl = document.getElementById("full-map");
+      fullMapEl.innerHTML = "";
+      modalMap = new google.maps.Map(fullMapEl, {
+        center:
+          station.id === HOME_STATION_ID || station.is_home
+            ? SHIELDS_COORDS
+            : {
+                lat:
+                  station.latitude ?? station.lat ?? SHIELDS_COORDS.lat,
+                lng:
+                  station.longitude ?? station.lon ?? SHIELDS_COORDS.lng,
+              },
+        zoom: 15,
+        mapTypeControl: false,
+        streetViewControl: false,
+      });
+
+      new google.maps.Marker({
+        map: modalMap,
+        position:
+          station.id === HOME_STATION_ID || station.is_home
+            ? SHIELDS_COORDS
+            : {
+                lat:
+                  station.latitude ?? station.lat ?? SHIELDS_COORDS.lat,
+                lng:
+                  station.longitude ?? station.lon ?? SHIELDS_COORDS.lng,
+              },
+        title: station.name || "Station",
+      });
+
+      const dirBtn = document.getElementById("modal-directions-btn");
+      dirBtn.onclick = () => {
+        const lat =
+          station.id === HOME_STATION_ID || station.is_home
+            ? SHIELDS_COORDS.lat
+            : station.latitude ?? station.lat ?? SHIELDS_COORDS.lat;
+        const lng =
+          station.id === HOME_STATION_ID || station.is_home
+            ? SHIELDS_COORDS.lng
+            : station.longitude ?? station.lon ?? SHIELDS_COORDS.lng;
+        const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+        window.open(url, "_blank");
+      };
+    }
+
+    function closeStationModal() {
+      document.getElementById("station-modal").classList.remove("active");
+      modalMap = null;
+    }
+
+    // --- Filtering -------------------------------------------------------------
+
+    function recomputeFilteredStations() {
+      const search = TarcartStore.searchQuery.toLowerCase().trim();
+      const radius = TarcartStore.radiusMiles;
+
+      const shields = TarcartStore.shieldsStation || {
+        latitude: SHIELDS_COORDS.lat,
+        longitude: SHIELDS_COORDS.lng,
       };
 
-      closeBtn.addEventListener("click", closeModal);
-      overlay.addEventListener("click", (e) => {
-        if (e.target === overlay) closeModal();
-      });
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && overlay.classList.contains("active")) {
-          closeModal();
-        }
-      });
-    }
+      const out = [];
+      TarcartStore.stations.forEach((st) => {
+        const isShields = st.id === HOME_STATION_ID || st.is_home === true;
 
-    function renderGoogleMapMarkers() {
-      const mapEl = document.getElementById("stations-map");
-      if (!mapEl || !window.google || !window.google.maps) return;
-      if (!tarcartStations || tarcartStations.length === 0) return;
+        const lat = st.latitude ?? st.lat ?? (isShields ? SHIELDS_COORDS.lat : null);
+        const lng = st.longitude ?? st.lon ?? (isShields ? SHIELDS_COORDS.lng : null);
 
-      if (!googleMap) {
-        // Default center around North Miami area
-        googleMap = new google.maps.Map(mapEl, {
-          center: { lat: 25.9, lng: -80.16 },
-          zoom: 12,
-        });
-      }
+        if (lat == null || lng == null) return;
 
-      googleMarkers.forEach((m) => m.setMap(null));
-      googleMarkers = [];
+        const dist = distanceMiles(
+          shields.latitude ?? SHIELDS_COORDS.lat,
+          shields.longitude ?? SHIELDS_COORDS.lng,
+          lat,
+          lng
+        );
 
-      const bounds = new google.maps.LatLngBounds();
-      let haveAny = false;
+        st.distance = dist;
 
-      tarcartStations.forEach((st) => {
-        const cached = getCachedCoords(st.id);
-        if (!cached) return;
-        const pos = { lat: cached.lat, lng: cached.lon };
+        if (dist > radius) return;
 
-        const nameLower = (st.name || "").toLowerCase();
-        const isOwner =
-          nameLower.includes(HOME_STATION_KEYWORD) ||
-          st.verified_owner === true;
-
-        const markerOptions = {
-          position: pos,
-          map: googleMap,
-          title: st.name || "Station",
-        };
-
-        if (isOwner && window.google && window.google.maps) {
-          markerOptions.icon = {
-            url: "https://maps.google.com/mapfiles/kml/shapes/star.png",
-            scaledSize: new google.maps.Size(32, 32),
-          };
+        if (search) {
+          const combined =
+            (st.name || "") +
+            " " +
+            (st.brand || "") +
+            " " +
+            (st.address || "") +
+            " " +
+            (st.city || "") +
+            " " +
+            (st.state || "");
+          if (!combined.toLowerCase().includes(search)) return;
         }
 
-        const marker = new google.maps.Marker(markerOptions);
-
-        const pc = st.prices_cents || {};
-        const reg =
-          typeof pc.reg === "number"
-            ? formatPriceFromCents(pc.reg)
-            : "N/A";
-
-        const infoHtml =
-          '<div style="font-size:13px; line-height:1.35;">' +
-          "<strong>" +
-          (st.name || "Station") +
-          "</strong><br/>" +
-          (st.address
-            ? st.address + "<br/>"
-            : "") +
-          (st.city || st.state
-            ? [st.city, st.state].filter(Boolean).join(", ") + "<br/>"
-            : "") +
-          "Regular 87: " +
-          reg +
-          "</div>";
-
-        const infoWin = new google.maps.InfoWindow({
-          content: infoHtml,
-        });
-
-        marker.addListener("click", () => {
-          infoWin.open(googleMap, marker);
-        });
-
-        googleMarkers.push(marker);
-        bounds.extend(pos);
-        haveAny = true;
+        out.push(st);
       });
 
-      if (haveAny) {
-        googleMap.fitBounds(bounds);
+      // Sort by distance
+      out.sort((a, b) => (a.distance || 0) - (b.distance || 0));
+
+      TarcartStore.filteredStations = out;
+    }
+
+    function applyView() {
+      const mapEl = document.getElementById("map-container");
+      const listEl = document.getElementById("stations-list");
+      const mapToggle = document.getElementById("toggle-map-view");
+      const listToggle = document.getElementById("toggle-list-view");
+      const navMap = document.getElementById("nav-map-view");
+      const navList = document.getElementById("nav-list-view");
+
+      if (TarcartStore.view === "map") {
+        mapEl.style.display = "block";
+        listEl.style.display = "none";
+        mapToggle.classList.add("active");
+        listToggle.classList.remove("active");
+        navMap.classList.add("active");
+        navList.classList.remove("active");
+        if (TarcartStore.map) google.maps.event.trigger(TarcartStore.map, "resize");
+      } else {
+        mapEl.style.display = "none";
+        listEl.style.display = "block";
+        mapToggle.classList.remove("active");
+        listToggle.classList.add("active");
+        navMap.classList.remove("active");
+        navList.classList.add("active");
       }
     }
 
-    function ensureGoogleMap() {
-      const mapViewEl = document.getElementById("stations-map-view");
-      if (!mapViewEl || mapViewEl.style.display === "none") return;
-      if (!window.tarcartGoogleMapsLoaded) {
-        // Google script still loading; markers will be rendered when callback fires.
-        return;
-      }
-      renderGoogleMapMarkers();
+    // --- Init ------------------------------------------------------------------
+
+    async function initTarcart() {
+      applyThemeFromPreference();
+
+      document
+        .getElementById("theme-toggle")
+        .addEventListener("click", toggleThemeMode);
+
+      document
+        .getElementById("sidebar-collapse-btn")
+        .addEventListener("click", () => {
+          const shell = document.getElementById("tarcart-shell");
+          shell.classList.toggle("collapsed");
+        });
+
+      document
+        .getElementById("toggle-map-view")
+        .addEventListener("click", () => {
+          TarcartStore.view = "map";
+          applyView();
+        });
+
+      document
+        .getElementById("toggle-list-view")
+        .addEventListener("click", () => {
+          TarcartStore.view = "list";
+          applyView();
+          renderStationList();
+        });
+
+      document.getElementById("nav-map-view").addEventListener("click", () => {
+        TarcartStore.view = "map";
+        applyView();
+      });
+      document.getElementById("nav-list-view").addEventListener("click", () => {
+        TarcartStore.view = "list";
+        applyView();
+        renderStationList();
+      });
+
+      document
+        .getElementById("btn-center-shields")
+        .addEventListener("click", centerOnShields);
+
+      document.getElementById("radius-input").addEventListener("input", (e) => {
+        const value = Number(e.target.value);
+        TarcartStore.radiusMiles = value;
+        document.getElementById("radius-label").textContent = value;
+        recomputeFilteredStations();
+        renderStationList();
+        syncMapMarkers();
+      });
+
+      document.getElementById("search-input").addEventListener("input", (e) => {
+        TarcartStore.searchQuery = e.target.value;
+        recomputeFilteredStations();
+        renderStationList();
+        syncMapMarkers();
+      });
+
+      document
+        .getElementById("nav-refresh")
+        .addEventListener("click", async () => {
+          await loadStations();
+          showToast("Station data refreshed.");
+        });
+
+      document
+        .getElementById("modal-close-btn")
+        .addEventListener("click", closeStationModal);
+      document
+        .getElementById("station-modal")
+        .addEventListener("click", (e) => {
+          if (e.target.id === "station-modal") closeStationModal();
+        });
+
+      await loadStations();
     }
-    window.ensureGoogleMap = ensureGoogleMap;
 
     async function loadStations() {
-      const list = document.getElementById("stations-list");
-      const dropdown = document.getElementById("station-select");
-
-      list.textContent = "Loading stations…";
-
       try {
-        const res = await fetch(API + "/api/stations");
-        if (!res.ok) {
-          throw new Error("HTTP " + res.status);
+        const stations = await fetchStations();
+        TarcartStore.stations = stations;
+
+        // Find Shields entry
+        const shields =
+          stations.find((s) => s.id === HOME_STATION_ID || s.is_home === true) ||
+          null;
+        TarcartStore.shieldsStation = shields;
+
+        if (!TarcartStore.googleReady) {
+          // map will be initialized when Google loads
+        } else {
+          if (!TarcartStore.map) initMap();
         }
-        const stations = await res.json();
-        tarcartStations = stations;
-        console.log("Stations from /api/stations", stations);
 
-        if (!Array.isArray(stations) || stations.length === 0) {
-          list.textContent = "No stations available yet.";
-          dropdown.innerHTML =
-            '<option value="">No stations found</option>';
-          return;
-        }
+        recomputeFilteredStations();
+        renderStationList();
+        syncMapMarkers();
 
-        list.innerHTML = "";
-        dropdown.innerHTML = "";
-
-        // Find home station ("Shields")
-        const homeStation = stations.find((st) => {
-          const name = (st.name || "").toLowerCase();
-          return name.includes(HOME_STATION_KEYWORD);
-        });
-
-        const homeRegCents =
-          homeStation &&
-          homeStation.prices_cents &&
-          typeof homeStation.prices_cents.reg === "number"
-            ? homeStation.prices_cents.reg
-            : null;
-
-        stations.forEach((st) => {
-          const isHome =
-            (st.name || "").toLowerCase().includes(HOME_STATION_KEYWORD);
-
-          const row = document.createElement("div");
-          row.className = "station-item" + (isHome ? " home-station" : "");
-
-          const main = document.createElement("div");
-          main.className = "station-main";
-
-          const headerRow = document.createElement("div");
-          headerRow.className = "station-header-row";
-
-          const nameEl = document.createElement("div");
-          nameEl.className = "station-name";
-          nameEl.textContent = st.name || "Unknown station";
-
-          const badges = document.createElement("div");
-          badges.className = "station-badges";
-
-          const ownerBadge = document.createElement("span");
-          ownerBadge.className =
-            "badge " + (isHome ? "badge-owner" : "");
-          ownerBadge.textContent = isHome
-            ? "Owner station"
-            : "Community station";
-          badges.appendChild(ownerBadge);
-
-          const updatedAt =
-            st.last_price_at || st.updated_at || st.last_updated_at;
-          if (updatedAt) {
-            const updatedBadge = document.createElement("span");
-            updatedBadge.className = "badge badge-updated";
-            updatedBadge.textContent = formatRelativeTime(updatedAt);
-            badges.appendChild(updatedBadge);
-          }
-
-          headerRow.appendChild(nameEl);
-          headerRow.appendChild(badges);
-          main.appendChild(headerRow);
-
-          const meta = document.createElement("div");
-          meta.className = "station-meta";
-          const parts = [];
-          if (st.brand) parts.push(st.brand);
-          if (st.address) parts.push(st.address);
-          if (st.city || st.state) {
-            parts.push(
-              [st.city, st.state].filter(Boolean).join(", ")
-            );
-          }
-          meta.textContent = parts.join(" • ");
-          main.appendChild(meta);
-
-          const prices = document.createElement("div");
-          prices.className = "price-row";
-          const pc = st.prices_cents || {};
-
-          function addPricePill(gradeKey, label) {
-            if (typeof pc[gradeKey] === "number") {
-              const pill = document.createElement("div");
-              pill.className = "price-pill";
-              const gradeSpan = document.createElement("span");
-              gradeSpan.className = "grade";
-              gradeSpan.textContent = label;
-              const priceSpan = document.createElement("span");
-              priceSpan.textContent = formatPriceFromCents(pc[gradeKey]);
-              pill.appendChild(gradeSpan);
-              pill.appendChild(priceSpan);
-              prices.appendChild(pill);
-            }
-          }
-
-          addPricePill("reg", "87");
-          addPricePill("mid", "89");
-          addPricePill("prem", "93");
-          addPricePill("diesel", "Diesel");
-
-          main.appendChild(prices);
-
-          // Spread line (based on regular 87)
-          if (!isHome && homeRegCents != null && typeof pc.reg === "number") {
-            const diff = pc.reg - homeRegCents;
-            const dollars = diff / 100;
-            const spread = document.createElement("div");
-            spread.className = "spread-text";
-
-            if (diff > 0) {
-              spread.classList.add("spread-positive");
-              spread.textContent =
-                "+" +
-                dollars.toFixed(2) +
-                " vs Shields (higher)";
-            } else if (diff < 0) {
-              spread.classList.add("spread-negative");
-              spread.textContent =
-                dollars.toFixed(2) + " vs Shields (lower)";
-            } else {
-              spread.classList.add("spread-neutral");
-              spread.textContent = "Same price as Shields";
-            }
-            main.appendChild(spread);
-          } else if (isHome && typeof pc.reg === "number") {
-            const spread = document.createElement("div");
-            spread.className = "spread-text spread-neutral";
-            spread.textContent = "Baseline price used for comparison";
-            main.appendChild(spread);
-          }
-
-          row.appendChild(main);
-
-          const mapDiv = document.createElement("div");
-          mapDiv.className = "station-map";
-          mapDiv.textContent = "Loading map…";
-          mapDiv.title = "View on map";
-          mapDiv.addEventListener("click", () => openMapModal(st));
-          row.appendChild(mapDiv);
-
-          list.appendChild(row);
-
-          // Populate dropdown
-          const opt = document.createElement("option");
-          opt.value = st.id;
-          opt.textContent = st.name || "Station " + st.id;
-          if (isHome && !dropdown.value) {
-            opt.selected = true;
-          }
-          dropdown.appendChild(opt);
-
-          // Set mini-map
-          setMapPreview(st, mapDiv);
-        });
-
-        // If Google Map view is active and the script has loaded, render markers
-        ensureGoogleMap();
+        const headerStatus = document.getElementById("header-status-text");
+        headerStatus.textContent = "Live data · " + stations.length + " stations";
       } catch (err) {
-        console.error("Failed to load stations", err);
-        list.textContent = "Failed to load stations. Please try again later.";
-        dropdown.innerHTML =
-          '<option value="">Unable to load stations</option>';
+        console.error(err);
+        showToast("Failed to load station data.");
       }
     }
 
-    // Tabs behavior
-    document.querySelectorAll(".tab-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        document
-          .querySelectorAll(".tab-btn")
-          .forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        const target = btn.getAttribute("data-target");
-        document
-          .querySelectorAll(".tab-section")
-          .forEach((sec) => sec.classList.remove("active"));
-        const activeSec = document.getElementById(target);
-        if (activeSec) {
-          activeSec.classList.add("active");
-        }
-      });
-    });
-
-    // View toggle (List / Map)
-    (function initViewToggle() {
-      const viewButtons = document.querySelectorAll(".view-toggle-btn");
-      const listViewEl = document.getElementById("stations-list-view");
-      const mapViewEl = document.getElementById("stations-map-view");
-
-      viewButtons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          viewButtons.forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-          const view = btn.getAttribute("data-view");
-          if (view === "map") {
-            listViewEl.style.display = "none";
-            mapViewEl.style.display = "block";
-            ensureGoogleMap();
-          } else {
-            listViewEl.style.display = "block";
-            mapViewEl.style.display = "none";
-          }
-        });
-      });
-    })();
-
-    // Submit price update (via mailto)
-    document
-      .getElementById("submit-price-btn")
-      .addEventListener("click", () => {
-        const stationId = document.getElementById("station-select").value;
-        const grade = document.getElementById("grade-select").value;
-        const price = parseFloat(
-          document.getElementById("price-input").value
-        );
-        const notes = document.getElementById("notes-input").value || "";
-
-        if (!stationId) {
-          alert("Please choose a station.");
-          return;
-        }
-        if (!price || price <= 0) {
-          alert("Please enter a valid price.");
-          return;
-        }
-
-        const emailBody = `New Gas Price Submitted
------------------------
-Station ID: ${stationId}
-Grade: ${grade}
-Price: ${price}
-Notes: ${notes}
-`;
-
-        window.location.href =
-          "mailto:info@shieldsind.com?subject=" +
-          encodeURIComponent("Tarcart Price Update") +
-          "&body=" +
-          encodeURIComponent(emailBody);
-      });
-
-    // Submit new station (via mailto)
-    document
-      .getElementById("submit-station-btn")
-      .addEventListener("click", () => {
-        const name = document.getElementById("new-name").value.trim();
-        const brand = document.getElementById("new-brand").value.trim();
-        const address = document
-          .getElementById("new-address")
-          .value.trim();
-        const city = document.getElementById("new-city").value.trim();
-        const state = document.getElementById("new-state").value.trim();
-
-        if (!name || !brand || !address || !city || !state) {
-          alert("Please fill in all required fields.");
-          return;
-        }
-
-        const emailBody = `New Station Submitted
------------------------
-Name: ${name}
-Brand: ${brand}
-Address: ${address}
-City: ${city}
-State: ${state}
-`;
-
-        window.location.href =
-          "mailto:info@shieldsind.com?subject=" +
-          encodeURIComponent("Tarcart New Station") +
-          "&body=" +
-          encodeURIComponent(emailBody);
-      });
-
-    // Init
-    initModalClose();
-    loadStations();
+    window.addEventListener("DOMContentLoaded", initTarcart);
   </script>
 </body>
 </html>
