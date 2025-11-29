@@ -5,12 +5,14 @@ import { geocodeAddress } from "./services/geocoding";
 const router = Router();
 
 router.get("/", async (req, res) => {
+    console.log("🚦 HIT /api/stations — NEW VERSION");   // <-- add this line
+
     try {
         const { rows: stations } = await pool.query(
             `SELECT id, name, brand, address, city, state, latitude, longitude, prices_cents, is_home 
              FROM stations ORDER BY id ASC`
         );
-
+  
         for (const station of stations) {
             // Only geocode if missing
             if (station.latitude === null || station.longitude === null) {
