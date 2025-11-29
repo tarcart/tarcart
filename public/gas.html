@@ -13,13 +13,7 @@
     rel="stylesheet"
   />
 
-  <!-- MarkerClusterer (for clustering) -->
-  <script
-    src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js"
-    defer
-  ></script>
-
-  <!-- Google Maps JS -->
+  <!-- Google Maps JS (same key as before, for main + mini maps) -->
   <script
     id="gmaps-script"
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAt74rhQgMZZO-KONJ_JTsBTnH3hr63a7M"
@@ -52,7 +46,6 @@
       --transition-fast: 160ms ease-out;
       --transition-slow: 240ms ease;
       --header-height: 64px;
-      --pulse-color: rgba(59, 130, 246, 0.45);
     }
 
     html[data-theme="light"] {
@@ -89,8 +82,6 @@
       display: flex;
       overflow: hidden;
     }
-
-    /* Layout */
 
     .tarcart-shell {
       display: grid;
@@ -273,10 +264,6 @@
       display: none;
     }
 
-    .tarcart-shell.collapsed .sidebar-subtitle {
-      display: none;
-    }
-
     .tarcart-shell.collapsed .sidebar-nav-btn {
       justify-content: center;
       padding-inline: 8px;
@@ -295,7 +282,7 @@
     }
 
     .tarcart-header {
-      height: var(--header-height);
+      height: 64px;
       padding: 10px 18px;
       display: flex;
       align-items: center;
@@ -438,8 +425,6 @@
       box-shadow: 0 10px 24px rgba(37, 99, 235, 0.6);
     }
 
-    /* Map & List */
-
     #map-container {
       width: 100%;
       height: 480px;
@@ -552,14 +537,10 @@
       color: rgba(148, 163, 184, 0.9);
     }
 
-    .mini-map img {
+    .mini-map-inner {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      display: block;
     }
-
-    /* Right column card */
 
     .control-stack {
       display: flex;
@@ -584,8 +565,7 @@
       width: 100%;
     }
 
-    .text-input,
-    .select-input {
+    .text-input {
       width: 100%;
       border-radius: 10px;
       border: 1px solid rgba(148, 163, 184, 0.5);
@@ -595,8 +575,7 @@
       color: inherit;
     }
 
-    .text-input:focus,
-    .select-input:focus {
+    .text-input:focus {
       outline: none;
       border-color: var(--accent);
       box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.4);
@@ -646,8 +625,6 @@
       background: rgba(15, 23, 42, 0.06);
       border: 1px solid rgba(148, 163, 184, 0.4);
     }
-
-    /* Modal */
 
     .modal-backdrop {
       position: fixed;
@@ -747,37 +724,6 @@
       background: rgba(148, 163, 184, 0.18);
     }
 
-    /* Simple pulsing ring for Shields */
-
-    .shields-pulse {
-      position: absolute;
-      width: 46px;
-      height: 46px;
-      border-radius: 999px;
-      border: 2px solid rgba(59, 130, 246, 0.75);
-      background: radial-gradient(circle, rgba(96, 165, 250, 0.4), transparent);
-      animation: pulse-ring 1.6s infinite ease-out;
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-    }
-
-    @keyframes pulse-ring {
-      0% {
-        transform: translate(-50%, -50%) scale(0.2);
-        opacity: 0.85;
-      }
-      70% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0;
-      }
-      100% {
-        transform: translate(-50%, -50%) scale(1.05);
-        opacity: 0;
-      }
-    }
-
-    /* Toast */
-
     .toast {
       position: fixed;
       right: 18px;
@@ -804,8 +750,6 @@
       font-size: 11px;
       background: rgba(37, 99, 235, 0.42);
     }
-
-    /* Mobile tweaks */
 
     @media (max-width: 768px) {
       .tarcart-shell {
@@ -837,11 +781,9 @@
 </head>
 <body>
   <div class="tarcart-shell" id="tarcart-shell">
-    <!-- Sidebar -->
     <aside class="tarcart-sidebar" id="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-logo">
-          <!-- Place your transparent logo here -->
           <img src="/assets/img/tarcart-logo.png" alt="Tarcart logo" />
         </div>
         <div class="sidebar-title-block">
@@ -850,9 +792,7 @@
         </div>
       </div>
 
-      <button class="sidebar-collapse-btn" id="sidebar-collapse-btn">
-        ‹
-      </button>
+      <button class="sidebar-collapse-btn" id="sidebar-collapse-btn">‹</button>
 
       <nav class="sidebar-nav">
         <div class="sidebar-section-label">Views</div>
@@ -891,7 +831,6 @@
       </div>
     </aside>
 
-    <!-- Main area -->
     <main class="tarcart-main">
       <header class="tarcart-header">
         <div class="header-left">
@@ -914,7 +853,6 @@
 
       <section class="tarcart-content">
         <div class="tarcart-grid">
-          <!-- Left: Map/List -->
           <section class="card">
             <div class="card-header">
               <div>
@@ -944,7 +882,6 @@
             <div id="stations-list" style="display: none"></div>
           </section>
 
-          <!-- Right: Controls -->
           <section class="card">
             <div class="card-header">
               <div>
@@ -1001,7 +938,6 @@
     </main>
   </div>
 
-  <!-- Station details modal -->
   <div class="modal-backdrop" id="station-modal">
     <div class="modal-card">
       <div class="modal-header">
@@ -1024,15 +960,12 @@
     </div>
   </div>
 
-  <!-- Toast -->
   <div class="toast" id="toast">
     <span class="toast-pill">Tarcart</span>
     <span id="toast-text"></span>
   </div>
 
   <script>
-    // --- Basic store & helpers -------------------------------------------------
-
     const TarcartStore = {
       stations: [],
       filteredStations: [],
@@ -1043,19 +976,11 @@
       googleReady: false,
       map: null,
       markers: [],
-      markerCluster: null,
-      shieldsMarker: null,
-      shieldsPulseDiv: null,
-      mapBounds: null,
     };
 
     const API_BASE = "https://octopus-app-v54dv.ondigitalocean.app";
-
-    const HOME_STATION_ID = 1; // Shields
+    const HOME_STATION_ID = 1;
     const SHIELDS_COORDS = { lat: 25.88951, lng: -80.16406 };
-
-    // 👉 Static Maps API key (for mini-map image URLs)
-    const STATIC_MAPS_KEY = "AIzaSyAq8etIp6AGiK1n4r5mCiDip4hGfyQmZo0";
 
     function showToast(message, timeout = 2600) {
       const toast = document.getElementById("toast");
@@ -1121,10 +1046,8 @@
         callback();
         return;
       }
-
       const maxAttempts = 40;
       let attempts = 0;
-
       const timer = setInterval(() => {
         if (window.google && window.google.maps) {
           clearInterval(timer);
@@ -1136,12 +1059,10 @@
       }, 300);
     }
 
-    // Helper to safely get numeric station coordinates
-    function getStationCoords(station) {
-      const isShields = station.id === HOME_STATION_ID || station.is_home === true;
-
-      const rawLat = station.latitude ?? station.lat;
-      const rawLng = station.longitude ?? station.lon;
+    function getStationCoords(st) {
+      const isShields = st.id === HOME_STATION_ID || st.is_home === true;
+      const rawLat = st.latitude ?? st.lat;
+      const rawLng = st.longitude ?? st.lon;
 
       let lat = rawLat != null ? Number(rawLat) : null;
       let lng = rawLng != null ? Number(rawLng) : null;
@@ -1151,14 +1072,11 @@
           lat = SHIELDS_COORDS.lat;
           lng = SHIELDS_COORDS.lng;
         } else {
-          return null; // bad coords, skip
+          return null;
         }
       }
-
       return { lat, lng };
     }
-
-    // --- API -------------------------------------------------------------------
 
     async function fetchStations() {
       const res = await fetch(API_BASE + "/api/stations");
@@ -1167,8 +1085,6 @@
       console.log("Stations from /api/stations", stations);
       return stations;
     }
-
-    // --- Map logic -------------------------------------------------------------
 
     function initMap() {
       if (!TarcartStore.googleReady) return;
@@ -1180,34 +1096,16 @@
         mapTypeControl: false,
         streetViewControl: false,
         fullscreenControl: true,
-        styles: [],
       });
     }
 
     function clearMarkers() {
       TarcartStore.markers.forEach((m) => m.setMap(null));
       TarcartStore.markers = [];
-      if (TarcartStore.markerCluster) {
-        TarcartStore.markerCluster.clearMarkers();
-        TarcartStore.markerCluster = null;
-      }
-      if (TarcartStore.shieldsMarker) {
-        TarcartStore.shieldsMarker.setMap(null);
-        TarcartStore.shieldsMarker = null;
-      }
-      if (TarcartStore.shieldsPulseDiv && TarcartStore.shieldsPulseDiv.parentNode) {
-        TarcartStore.shieldsPulseDiv.parentNode.removeChild(
-          TarcartStore.shieldsPulseDiv
-        );
-        TarcartStore.shieldsPulseDiv = null;
-      }
     }
 
     function syncMapMarkers() {
-      if (!TarcartStore.map || !window.google || !window.google.maps) {
-        console.warn("syncMapMarkers called before map is ready.");
-        return;
-      }
+      if (!TarcartStore.map || !window.google || !window.google.maps) return;
 
       const g = window.google;
       const stations = TarcartStore.filteredStations || [];
@@ -1216,21 +1114,18 @@
       clearMarkers();
 
       const bounds = new g.maps.LatLngBounds();
-      let shieldsPoint = null;
 
       stations.forEach((st) => {
         const coords = getStationCoords(st);
-        const isShields = st.id === HOME_STATION_ID || st.is_home === true;
-
         if (!coords) {
           console.warn("Skipping station with invalid coords:", st.name);
           return;
         }
 
-        const pos = coords;
+        const isShields = st.id === HOME_STATION_ID || st.is_home === true;
 
         const marker = new g.maps.Marker({
-          position: pos,
+          position: coords,
           map: TarcartStore.map,
           title: st.name || "Station",
           icon: isShields
@@ -1243,18 +1138,11 @@
 
         marker._station = st;
         TarcartStore.markers.push(marker);
-        bounds.extend(pos);
+        bounds.extend(coords);
 
         g.maps.event.addListener(marker, "click", () => {
           openStationModal(st);
         });
-
-        if (isShields) {
-          TarcartStore.shieldsMarker = marker;
-          shieldsPoint = pos;
-        }
-
-        console.log("Created marker for", st.name, pos);
       });
 
       if (!bounds.isEmpty()) {
@@ -1262,34 +1150,6 @@
       } else {
         TarcartStore.map.setCenter(SHIELDS_COORDS);
         TarcartStore.map.setZoom(11);
-      }
-
-      if (shieldsPoint) {
-        const overlay = new g.maps.OverlayView();
-        overlay.onAdd = function () {
-          const div = document.createElement("div");
-          div.className = "shields-pulse";
-          TarcartStore.shieldsPulseDiv = div;
-          const panes = this.getPanes();
-          panes.overlayMouseTarget.appendChild(div);
-        };
-        overlay.draw = function () {
-          const projection = this.getProjection();
-          const pos = projection.fromLatLngToDivPixel(
-            new g.maps.LatLng(shieldsPoint.lat, shieldsPoint.lng)
-          );
-          const div = TarcartStore.shieldsPulseDiv;
-          if (!div) return;
-          div.style.left = pos.x + "px";
-          div.style.top = pos.y + "px";
-        };
-        overlay.onRemove = function () {
-          if (TarcartStore.shieldsPulseDiv) {
-            TarcartStore.shieldsPulseDiv.remove();
-            TarcartStore.shieldsPulseDiv = null;
-          }
-        };
-        overlay.setMap(TarcartStore.map);
       }
     }
 
@@ -1300,24 +1160,33 @@
       showToast("Centered map on Shields.");
     }
 
-    // --- List rendering + STATIC mini maps ------------------------------------
+    // MINI MAPS USING JS API
+    function renderMiniMap(station, container) {
+      if (!window.google || !window.google.maps) return;
 
-    function getStaticMapUrl(lat, lng, zoom = 12) {
-      if (!STATIC_MAPS_KEY) return "";
-      return (
-        "https://maps.googleapis.com/maps/api/staticmap?center=" +
-        lat +
-        "," +
-        lng +
-        "&zoom=" +
-        zoom +
-        "&size=320x200&scale=2&maptype=roadmap&markers=size:mid%7Ccolor:red%7C" +
-        lat +
-        "," +
-        lng +
-        "&key=" +
-        encodeURIComponent(STATIC_MAPS_KEY)
-      );
+      const coords = getStationCoords(station);
+      if (!coords) {
+        container.textContent = "No location";
+        return;
+      }
+
+      const mini = new google.maps.Map(container, {
+        center: coords,
+        zoom: 15,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+        zoomControl: false,
+        draggable: false,
+        disableDefaultUI: true,
+        gestureHandling: "none",
+      });
+
+      new google.maps.Marker({
+        map: mini,
+        position: coords,
+        title: station.name || "Station",
+      });
     }
 
     function renderStationList() {
@@ -1377,36 +1246,27 @@
         main.appendChild(metaRow);
         main.appendChild(prices);
 
-        const mini = document.createElement("div");
-        mini.className = "mini-map";
-
-        const coords = getStationCoords(st);
-        if (coords && STATIC_MAPS_KEY) {
-          const url = getStaticMapUrl(coords.lat, coords.lng, 15);
-          if (url) {
-            const img = document.createElement("img");
-            img.src = url;
-            img.alt = "Mini map for " + (st.name || "station");
-            mini.appendChild(img);
-          } else {
-            mini.textContent = "Map not available";
-          }
-        } else {
-          mini.textContent = "Map not available";
-        }
+        const miniOuter = document.createElement("div");
+        miniOuter.className = "mini-map";
+        const miniInner = document.createElement("div");
+        miniInner.className = "mini-map-inner";
+        miniOuter.appendChild(miniInner);
 
         row.appendChild(main);
-        row.appendChild(mini);
+        row.appendChild(miniOuter);
 
         row.addEventListener("click", () => {
           openStationModal(st);
         });
 
         listEl.appendChild(row);
+
+        // render mini map after element is in DOM
+        if (TarcartStore.googleReady) {
+          renderMiniMap(st, miniInner);
+        }
       });
     }
-
-    // --- Modal ------------------------------------------------------------
 
     let modalMap = null;
 
@@ -1465,8 +1325,6 @@
       modalMap = null;
     }
 
-    // --- Filtering -------------------------------------------------------------
-
     function recomputeFilteredStations() {
       const search = TarcartStore.searchQuery.toLowerCase().trim();
       const radius = TarcartStore.radiusMiles;
@@ -1510,7 +1368,6 @@
       });
 
       out.sort((a, b) => (a.distance || 0) - (b.distance || 0));
-
       TarcartStore.filteredStations = out;
     }
 
@@ -1540,7 +1397,27 @@
       }
     }
 
-    // --- Init ------------------------------------------------------------------
+    async function loadStations() {
+      try {
+        const stations = await fetchStations();
+        TarcartStore.stations = stations;
+
+        const shields =
+          stations.find((s) => s.id === HOME_STATION_ID || s.is_home === true) ||
+          null;
+        TarcartStore.shieldsStation = shields;
+
+        recomputeFilteredStations();
+        renderStationList();
+        syncMapMarkers();
+
+        const headerStatus = document.getElementById("header-status-text");
+        headerStatus.textContent = "Live data · " + stations.length + " stations";
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to load station data.");
+      }
+    }
 
     async function initTarcart() {
       applyThemeFromPreference();
@@ -1605,13 +1482,12 @@
         .getElementById("nav-refresh")
         .addEventListener("click", async () => {
           await loadStations();
-
           waitForGoogleMapsReady(() => {
             TarcartStore.googleReady = true;
             if (!TarcartStore.map) initMap();
             syncMapMarkers();
+            renderStationList(); // ensure mini maps render with JS
           });
-
           showToast("Station data refreshed.");
         });
 
@@ -1630,35 +1506,8 @@
         TarcartStore.googleReady = true;
         if (!TarcartStore.map) initMap();
         syncMapMarkers();
+        renderStationList(); // render JS mini maps once Maps API is ready
       });
-    }
-
-    async function loadStations() {
-      try {
-        const stations = await fetchStations();
-        TarcartStore.stations = stations;
-
-        const shields =
-          stations.find((s) => s.id === HOME_STATION_ID || s.is_home === true) ||
-          null;
-        TarcartStore.shieldsStation = shields;
-
-        if (!TarcartStore.googleReady) {
-          // map will be initialized when Google loads
-        } else {
-          if (!TarcartStore.map) initMap();
-        }
-
-        recomputeFilteredStations();
-        renderStationList();
-        syncMapMarkers();
-
-        const headerStatus = document.getElementById("header-status-text");
-        headerStatus.textContent = "Live data · " + stations.length + " stations";
-      } catch (err) {
-        console.error(err);
-        showToast("Failed to load station data.");
-      }
     }
 
     window.addEventListener("DOMContentLoaded", initTarcart);
