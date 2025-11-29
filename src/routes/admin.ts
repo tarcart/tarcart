@@ -1,0 +1,227 @@
+import { Router, Request, Response, NextFunction } from "express";
+import { pool } from "../db";
+
+const router = Router();
+
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
+
+// Simple token-based guard for now.
+// Later we'll replace this with a proper login system.
+function requireAdmin(req: Request, res: Response, next: NextFunction) {
+  if (!ADMIN_TOKEN) {
+    console.error("ADMIN_TOKEN is not set");
+    return res.status(500).json({ error: "Admin not configured" });
+  }
+
+  const headerToken =
+    req.header("x-admin-token") ||
+    (req.header("authorization") || "").replace(/^Bearer\s+/i, "");
+
+  if (!headerToken || headerToken !== ADMIN_TOKEN) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  next();
+}
+
+router.use(requireAdmin);
+
+// GET /api/admin/submissions?status=pending&limit=50
+router.get("/submissions", async (req: Request, res: Response) => {
+  try {
+    const status = (req.query.status as string) || "pending";
+    const limit = Math.min(
+      parseInt((req.query.limit as string) || "50", 10),
+      200
+    );
+
+    const result = await pool.query(
+      `
+      SELECT
+        ps.id,
+        ps.station_id,
+        COALESCE(s.name, ps.station_name) AS station_name,
+        COALESCE(s.address, ps.station_address) AS station_address,
+        s.city,
+        s.state,
+        ps.grade,
+        ps.price_cents,
+        ps.notes,
+        ps.submitter_name,
+        ps.status,
+        ps.created_at
+      FROM price_submissions ps
+      LEFT JOIN stations s ON s.id = ps.station_id
+      WHERE ps.status = $1
+      ORDER BY ps.created_at DESC
+      LIMIT $2
+      `,
+      [status, limit]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error in GET /api/admin/submissions", err);
+    res.status(500).json({ error: "Failed to load submissions" });
+  }
+});
+
+// Approve a submission
+// - If it has station_id + grade + price_cents => approve price & write station_prices
+// - If it has NO station_id but has station_name => create a new station
+// POST /api/admin/submissions/:id/approve
+router.post(
+  "/submissions/:id/approve",
+  async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id, 10);
+
+    if (!Number.isFinite(id)) {
+      return res.status(400).json({ error: "Invalid submission id" });
+    }
+
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      const submissionResult = await client.query(
+        `
+        SELECT *
+        FROM price_submissions
+        WHERE id = $1
+        FOR UPDATE
+        `,
+        [id]
+      );
+
+      if (submissionResult.rowCount === 0) {
+        await client.query("ROLLBACK");
+        return res.status(404).json({ error: "Submission not found" });
+      }
+
+      const sub = submissionResult.rows[0];
+
+      // CASE 1: price update for an existing station
+      if (sub.station_id && sub.grade && sub.price_cents) {
+        await client.query(
+          `
+          INSERT INTO station_prices (
+            station_id,
+            grade,
+            price_cents,
+            is_cash_price,
+            source,
+            source_note
+          )
+          VALUES ($1, $2, $3, FALSE, $4, $5)
+          `,
+          [
+            sub.station_id,
+            sub.grade,
+            sub.price_cents,
+            "admin-approval",
+            sub.notes || null,
+          ]
+        );
+
+        await client.query(
+          `
+          UPDATE price_submissions
+          SET status = 'approved',
+              reviewed_at = now()
+          WHERE id = $1
+          `,
+          [id]
+        );
+
+        await client.query("COMMIT");
+        return res.json({ ok: true, type: "price" });
+      }
+
+      // CASE 2: new station submission (no station_id yet, has station_name)
+      if (!sub.station_id && sub.station_name) {
+        // Insert new station. For now we store full address in "address"
+        // and leave brand/city/state/lat/lon for later enrichment.
+        const insertStationResult = await client.query(
+          `
+          INSERT INTO stations (
+            name,
+            brand,
+            address,
+            city,
+            state,
+            is_home
+          )
+          VALUES ($1, NULL, $2, NULL, NULL, FALSE)
+          RETURNING id
+          `,
+          [sub.station_name, sub.station_address || null]
+        );
+
+        const newStationId = insertStationResult.rows[0].id;
+
+        await client.query(
+          `
+          UPDATE price_submissions
+          SET station_id = $2,
+              status = 'approved',
+              reviewed_at = now()
+          WHERE id = $1
+          `,
+          [id, newStationId]
+        );
+
+        await client.query("COMMIT");
+        return res.json({ ok: true, type: "station", stationId: newStationId });
+      }
+
+      // CASE 3: unsupported submission shape
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        error:
+          "Submission missing required fields. For prices: station_id, grade, price_cents. For new stations: station_name.",
+      });
+    } catch (err) {
+      await client.query("ROLLBACK");
+      console.error("Error in POST /api/admin/submissions/:id/approve", err);
+      res.status(500).json({ error: "Failed to approve submission" });
+    } finally {
+      client.release();
+    }
+  }
+);
+
+// Reject a submission
+// POST /api/admin/submissions/:id/reject
+router.post(
+  "/submissions/:id/reject",
+  async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id, 10);
+
+    if (!Number.isFinite(id)) {
+      return res.status(400).json({ error: "Invalid submission id" });
+    }
+
+    try {
+      const result = await pool.query(
+        `
+        UPDATE price_submissions
+        SET status = 'rejected',
+            reviewed_at = now()
+        WHERE id = $1
+        `,
+        [id]
+      );
+
+      if (result.rowCount === 0) {
+        return res.status(404).json({ error: "Submission not found" });
+      }
+
+      res.json({ ok: true });
+    } catch (err) {
+      console.error("Error in POST /api/admin/submissions/:id/reject", err);
+      res.status(500).json({ error: "Failed to reject submission" });
+    }
+  }
+);
+
+export default router;

@@ -1,0 +1,71 @@
+src/db.ts:1:22 - error TS7016: Could not find a declaration file for module 'pg'. 'C:/Users/garla/Desktop/Tarcart-API/node_modules/pg/lib/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/pg` if it exists or add a new declaration (.d.ts) file containing `declare module 'pg';`
+
+1 import { Pool } from "pg";
+                       ~~~~
+
+src/db.ts:3:1 - error TS1287: A top-level 'export' modifier cannot be used on value declarations in a CommonJS module when 'verbatimModuleSyntax' is enabled.
+
+3 export const pool = new Pool({
+  ~~~~~~
+
+src/index.ts:1:8 - error TS1295: ECMAScript imports and exports cannot be written in a CommonJS file under 'verbatimModuleSyntax'. Adjust the 'type' field in the nearest 'package.json' to make this file an ECMAScript module, or adjust your 'verbatimModuleSyntax', 'module', and 'moduleResolution' settings in TypeScript.
+
+1 import express from "express";
+         ~~~~~~~
+
+src/index.ts:2:18 - error TS7016: Could not find a declaration file for module 'cors'. 'C:/Users/garla/Desktop/Tarcart-API/node_modules/cors/lib/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/cors` if it exists or add a new declaration (.d.ts) file containing `declare module 'cors';`
+
+2 import cors from "cors";
+                   ~~~~~~
+
+src/index.ts:3:8 - error TS1295: ECMAScript imports and exports cannot be written in a CommonJS file under 'verbatimModuleSyntax'. Adjust the 'type' field in the nearest 'package.json' to make this file an ECMAScript module, or adjust your 'verbatimModuleSyntax', 'module', and 'moduleResolution' settings in TypeScript.
+
+3 import stationsRouter from "./routes/stations";
+         ~~~~~~~~~~~~~~
+
+src/index.ts:4:8 - error TS1295: ECMAScript imports and exports cannot be written in a CommonJS file under 'verbatimModuleSyntax'. Adjust the 'type' field in the nearest 'package.json' to make this file an ECMAScript module, or adjust your 'verbatimModuleSyntax', 'module', and 'moduleResolution' settings in TypeScript.
+
+4 import submissionsRouter from "./routes/submissions";
+         ~~~~~~~~~~~~~~~~~
+
+src/routes/stations.ts:1:10 - error TS1295: ECMAScript imports and exports cannot be written in a CommonJS file under 'verbatimModuleSyntax'. Adjust the 'type' field in the nearest 'package.json' to make this file an ECMAScript module, or adjust your 'verbatimModuleSyntax', 'module', and 'moduleResolution' settings in TypeScript.
+
+1 import { Router } from "express";
+           ~~~~~~
+
+src/routes/stations.ts:2:10 - error TS1295: ECMAScript imports and exports cannot be written in a CommonJS file under 'verbatimModuleSyntax'. Adjust the 'type' field in the nearest 'package.json' to make this file an ECMAScript module, or adjust your 'verbatimModuleSyntax', 'module', and 'moduleResolution' settings in TypeScript.
+
+2 import { pool } from "../db";
+           ~~~~
+
+src/routes/stations.ts:42:1 - error TS1295: ECMAScript imports and exports cannot be written in a CommonJS file under 'verbatimModuleSyntax'. Adjust the 'type' field in the nearest 'package.json' to make this file an ECMAScript module, or adjust your 'verbatimModuleSyntax', 'module', and 'moduleResolution' settings in TypeScript.
+
+42 export default router;
+   ~~~~~~~~~~~~~~~~~~~~~~
+
+src/routes/submissions.ts:1:10 - error TS1295: ECMAScript imports and exports cannot be written in a CommonJS file under 'verbatimModuleSyntax'. Adjust the 'type' field in the nearest 'package.json' to make this file an ECMAScript module, or adjust your 'verbatimModuleSyntax', 'module', and 'moduleResolution' settings in TypeScript.
+
+1 import { Router } from "express";
+           ~~~~~~
+
+src/routes/submissions.ts:2:10 - error TS1295: ECMAScript imports and exports cannot be written in a CommonJS file under 'verbatimModuleSyntax'. Adjust the 'type' field in the nearest 'package.json' to make this file an ECMAScript module, or adjust your 'verbatimModuleSyntax', 'module', and 'moduleResolution' settings in TypeScript.
+
+2 import { pool } from "../db";
+           ~~~~
+
+src/routes/submissions.ts:57:1 - error TS1295: ECMAScript imports and exports cannot be written in a CommonJS file under 'verbatimModuleSyntax'. Adjust the 'type' field in the nearest 'package.json' to make this file an ECMAScript module, or adjust your 'verbatimModuleSyntax', 'module', and 'moduleResolution' settings in TypeScript.
+
+57 export default router;
+   ~~~~~~~~~~~~~~~~~~~~~~
+
+
+Found 12 errors in 4 files.
+
+Errors  Files
+     2  src/db.ts:1
+     4  src/index.ts:1
+     3  src/routes/stations.ts:1
+     3  src/routes/submissions.ts:1
+PS C:\Users\garla\Desktop\Tarcart-API>

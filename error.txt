@@ -1,0 +1,765 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+PS G:\My Drive\Tarcart-API> npm init -y
+Wrote to G:\My Drive\Tarcart-API\package.json:
+
+{
+  "name": "tarcart-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
+
+
+
+PS G:\My Drive\Tarcart-API> npm install express pg cors
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EPERM: operation not permitted, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EPERM: operation not permitted, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EPERM: operation not permitted, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EPERM: operation not permitted, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EPERM: operation not permitted, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EPERM: operation not permitted, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EPERM: operation not permitted, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EPERM: operation not permitted, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EPERM: operation not permitted, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EPERM: operation not permitted, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EPERM: operation not permitted, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EPERM: operation not permitted, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR EBADF: bad file descriptor, lstat 'G:\My Drive\Tarcart-API\node_modules\pg\lib'
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn tar TAR_ENTRY_ERROR UNKNOWN: unknown error, write
+npm warn cleanup Failed to remove some directories [
+npm warn cleanup   [
+npm warn cleanup     '\\\\?\\G:\\My Drive\\Tarcart-API\\node_modules',
+npm warn cleanup     [Error: EPERM: operation not permitted, rmdir 'G:\My Drive\Tarcart-API\node_modules\dunder-proto\test'] {
+npm warn cleanup       errno: -4048,
+npm warn cleanup       code: 'EPERM',
+npm warn cleanup       syscall: 'rmdir',
+npm warn cleanup       path: 'G:\\My Drive\\Tarcart-API\\node_modules\\dunder-proto\\test'
+npm warn cleanup     }
+npm warn cleanup   ]
+npm warn cleanup ]
+npm error code EBADF
+npm error EBADF: bad file descriptor, write
+npm error A complete log of this run can be found in: C:\Users\garla\AppData\Local\npm-cache\_logs\2025-11-25T03_09_20_310Z-debug-0.log
+PS G:\My Drive\Tarcart-API> npm install -D typescript ts-node-dev @types/node @types/express
