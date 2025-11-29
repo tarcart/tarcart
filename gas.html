@@ -21,11 +21,9 @@
 
   <!-- Google Maps JS (replace key!) -->
   <script
-    id="gmaps-script"
-    async
-    defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApe83XPa6MNovCFytBZv0TICBqed7lPI8&callback=tarcartOnGoogleMapsReady"
-  ></script>
+  id="gmaps-script"
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApe83XPa6MNovCFytBZv0TICBqed7lPI8"
+></script>
 
   <style>
     :root {
@@ -1050,7 +1048,7 @@
       mapBounds: null,
     };
 
-    const API_BASE = ""; // same origin
+    const API_BASE = "https://octopus-app-v54dv.ondigitalocean.app";
 
     const HOME_STATION_ID = 1; // from your DB (id: 1 is Shields)
     const SHIELDS_COORDS = { lat: 25.88951, lng: -80.16406 }; // fixed
@@ -1125,16 +1123,6 @@
     }
 
     // --- Map logic -------------------------------------------------------------
-
-    function tarcartOnGoogleMapsReady() {
-      // called by Google Maps callback
-      TarcartStore.googleReady = true;
-      if (TarcartStore.stations.length) {
-        initMap();
-        syncMapMarkers();
-      }
-    }
-    window.tarcartOnGoogleMapsReady = tarcartOnGoogleMapsReady;
 
     function initMap() {
       if (!TarcartStore.googleReady) return;
