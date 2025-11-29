@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
   "build": "tsc",
-  "postbuild": "mkdir -p dist/public && cp -R public/* dist/public/",
+  "postbuild": "node copy-public.js",
   "start": "node dist/index.js",
   "dev": "ts-node-dev --respawn src/index.ts"
 },
