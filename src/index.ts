@@ -1,41 +1,50 @@
 import express from "express";
 import cors from "cors";
-
+import path from "path";
 import stationsRouter from "./stations";
-import submissionsRouter from "./routes/submissions";
-import adminRouter from "./routes/admin";
-import authRouter from "./routes/auth";
-import analyticsRouter from "./routes/analytics";
 
 const app = express();
-const PORT = process.env.PORT || 8080;
 
-// Basic middleware
+// Prefer env PORT from DigitalOcean, fallback to 8080 for local dev
+const port = Number(process.env.PORT) || 8080;
+
+// --- Middleware --------------------------------------------------------------
+
+// Allow the frontend (same origin or local dev) to call the API
 app.use(cors());
 app.use(express.json());
 
-// Health check
+// Serve static assets (gas.html, logo, etc.) from ../public in the compiled build.
+// When TypeScript compiles to dist/, __dirname will be /dist, so we go one level up.
+const publicDir = path.join(__dirname, "../public");
+app.use(express.static(publicDir));
+
+// --- Health check ------------------------------------------------------------
+
+// Simple health endpoint for DigitalOcean / your own checks
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
-// API routes
-app.use("/api/stations", stationsRouter);
-app.use("/api/submissions", submissionsRouter);
-app.use("/api/admin", adminRouter);
-app.use("/api/auth", authRouter);
-app.use("/api/analytics", analyticsRouter);
+// --- API routes --------------------------------------------------------------
 
-// Root – just a tiny message so hitting "/" doesn't 404
+// Stations API (what gas.html calls)
+app.use("/api/stations", stationsRouter);
+
+// --- Optional: friendly root + /gas redirect --------------------------------
+
+// Root can just confirm the API is running
 app.get("/", (_req, res) => {
-  res.json({
-    name: "Tarcart API",
-    status: "running",
-  });
+  res.json({ service: "Tarcart API", status: "running" });
 });
 
-// Start server
-app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Tarcart API listening on port ${PORT}`);
+// Convenience route: /gas -> serve the dashboard HTML
+app.get("/gas", (_req, res) => {
+  res.sendFile(path.join(publicDir, "gas.html"));
+});
+
+// --- Start server ------------------------------------------------------------
+
+app.listen(port, () => {
+  console.log(`Tarcart API listening on port ${port}`);
 });
