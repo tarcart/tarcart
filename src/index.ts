@@ -4,11 +4,14 @@ import cors from "cors";
 import { Pool } from "pg";
 import dotenv from "dotenv";
 
+
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static("dist/public"));
+
 
 // -------------------------------
 // STATIC FILES (IMPORTANT)
