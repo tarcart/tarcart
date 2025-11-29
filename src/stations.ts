@@ -9,9 +9,9 @@ router.get("/", async (req, res) => {
 
     try {
         const { rows: stations } = await pool.query(
-            `SELECT id, name, brand, address, city, state, latitude, longitude, prices_cents, is_home 
-             FROM stations ORDER BY id ASC`
-        );
+    `SELECT id, name, brand, address, city, state, latitude, longitude, is_home 
+     FROM stations ORDER BY id ASC`
+);
   
         for (const station of stations) {
             // Only geocode if missing
