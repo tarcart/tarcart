@@ -1374,14 +1374,14 @@
         const lat = st.latitude ?? st.lat ?? (isShields ? SHIELDS_COORDS.lat : null);
         const lng = st.longitude ?? st.lon ?? (isShields ? SHIELDS_COORDS.lng : null);
 
-        if (lat != null && lng != null && TarcartStore.googleReady) {
-          const img = document.createElement("img");
-          img.src = getStaticMapUrl(lat, lng, 15);
-          img.alt = "Mini map for " + (st.name || "station");
-          mini.appendChild(img);
-        } else {
-          mini.textContent = "Map not available";
-        }
+        if (lat != null && lng != null) {
+  const img = document.createElement("img");
+  img.src = getStaticMapUrl(lat, lng, 15);
+  img.alt = "Mini map for " + (st.name || "station");
+  mini.appendChild(img);
+} else {
+  mini.textContent = "Map not available";
+}
 
         row.appendChild(main);
         row.appendChild(mini);
