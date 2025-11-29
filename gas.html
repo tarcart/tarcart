@@ -1111,6 +1111,26 @@
       else if (next === "light") label.textContent = "Light";
       else label.textContent = "System";
     }
+    function waitForGoogleMapsReady(callback) {
+      if (window.google && window.google.maps) {
+        callback();
+        return;
+      }
+
+      const maxAttempts = 40; // ~12 seconds
+      let attempts = 0;
+
+      const timer = setInterval(() => {
+        if (window.google && window.google.maps) {
+          clearInterval(timer);
+          callback();
+        } else if (++attempts >= maxAttempts) {
+          clearInterval(timer);
+          console.error("Google Maps failed to load in time.");
+        }
+      }, 300);
+    }
+
 
     // --- API -------------------------------------------------------------------
 
@@ -1598,6 +1618,13 @@
         .getElementById("nav-refresh")
         .addEventListener("click", async () => {
           await loadStations();
+
+      waitForGoogleMapsReady(() => {
+        TarcartStore.googleReady = true;
+        if (!TarcartStore.map) initMap();
+        syncMapMarkers();
+      });
+
           showToast("Station data refreshed.");
         });
 
