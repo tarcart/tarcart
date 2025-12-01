@@ -1310,22 +1310,22 @@
         left.className = "station-main";
 
         left.innerHTML = `
-          <div class="station-name" style="font-size:13px;font-weight:600;">
-            ${st.name || "Station"}
-          </div>
+  <div class="station-name" style="font-size:13px;font-weight:600;">
+    ${st.name || "Station"}
+  </div>
 
-          <div class="station-meta" style="font-size:11px;opacity:0.8;">
-            ${(st.brand || "")} · ${(st.address || "")} 
-            ${(st.city || "")} ${(st.state || "")}
-          </div>
+  <div class="station-meta" style="font-size:11px;opacity:0.8;">
+    ${st.brand ? st.brand + " · " : ""}${st.address || ""} 
+    ${st.city || ""} ${st.state || ""}
+  </div>
 
-          <div class="station-meta-row" style="display:flex;gap:6px;font-size:11px;opacity:0.85;margin-top:3px;">
-            <span class="tag ${st.is_home ? "tag-owner" : ""}">
-              ${st.is_home ? "Owner · Shields" : "Community"}
-            </span>
-            <span>${st.distance?.toFixed(1) ?? "?"} mi</span>
-          </div>
-        `;
+  <div class="station-meta-row" style="display:flex;gap:6px;font-size:11px;opacity:0.85;margin-top:3px;">
+    <span class="tag ${st.is_home ? "tag-owner" : ""}">
+      ${st.is_home ? "Owner · Shields" : "Community"}
+    </span>
+    <span>${st.distance?.toFixed(1) ?? "?"} mi</span>
+  </div>
+`;
 
         const right = document.createElement("div");
         right.className = "mini-map";
