@@ -673,78 +673,166 @@
   <!-- ============================================================
        SUBMIT GAS PRICES MODAL
   =============================================================== -->
-  <div class="modal-backdrop" id="price-modal" style="
-       display:none; position:fixed; inset:0;
-       background:rgba(15,23,42,0.78);
-       align-items:center; justify-content:center; z-index:350;">
-
-            <div class="modal-card" style="
-         width: 100%;
-         max-width: 480px;
-         margin: 0 auto;
-         padding: 22px 20px;
-         box-sizing: border-box;
-         background: var(--card-bg);">
-
-
-      <div class="modal-header" style="display:flex;justify-content:space-between;align-items:center;">
+    <!-- ============================================================
+       SUBMIT GAS PRICES MODAL
+  =============================================================== -->
+  <div
+    class="modal-backdrop"
+    id="price-modal"
+    style="
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.78);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      box-sizing: border-box;
+      z-index: 350;
+    "
+  >
+    <div
+      class="modal-card"
+      style="
+        width: 100%;
+        max-width: 540px;
+        margin: 0 auto;
+        padding: 22px 24px;
+        box-sizing: border-box;
+        background: var(--card-bg);
+      "
+    >
+      <div
+        class="modal-header"
+        style="display: flex; justify-content: space-between; align-items: center;"
+      >
         <div>
-          <div class="modal-title" style="font-size:15px;font-weight:600;">Submit Gas Prices</div>
-          <div class="small-caption" style="opacity:0.75;margin-top:2px;">
+          <div class="modal-title" style="font-size: 15px; font-weight: 600;">
+            Submit Gas Prices
+          </div>
+          <div
+            class="small-caption"
+            style="opacity: 0.75; margin-top: 2px;"
+          >
             Help keep the community updated.
           </div>
         </div>
-        <button class="icon-btn" id="price-modal-close" style="
-                border-radius:999px;border:1px solid rgba(148,163,184,0.55);
-                width:26px;height:26px;background:rgba(15,23,42,0.1);cursor:pointer;">✕</button>
+        <button
+          class="icon-btn"
+          id="price-modal-close"
+          style="
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.55);
+            width: 26px;
+            height: 26px;
+            background: rgba(15, 23, 42, 0.1);
+            cursor: pointer;
+          "
+        >
+          ✕
+        </button>
       </div>
 
-      <div class="modal-body" style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;">
-        
-        <div class="modal-body-col" style="flex:1;min-width:160px;">
+      <div
+        class="modal-body"
+        style="
+          margin-top: 12px;
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+        "
+      >
+        <div
+          class="modal-body-col"
+          style="flex: 1; min-width: 200px;"
+        >
           <label class="small-caption">Choose station</label>
-          <select id="price-station-select" class="select-input" style="margin-top:6px;"></select>
+          <select
+            id="price-station-select"
+            class="select-input"
+            style="margin-top: 6px;"
+          ></select>
         </div>
 
-        <div class="modal-body-col" style="flex:1;min-width:160px;">
+        <div
+          class="modal-body-col"
+          style="flex: 1; min-width: 200px;"
+        >
           <div class="control-row">
             <label class="small-caption">Regular (87)</label>
-            <input id="price-input-87" class="text-input" type="number" step="0.001">
+            <input
+              id="price-input-87"
+              class="text-input"
+              type="number"
+              step="0.001"
+            />
           </div>
 
           <div class="control-row">
             <label class="small-caption">Midgrade (89)</label>
-            <input id="price-input-89" class="text-input" type="number" step="0.001">
+            <input
+              id="price-input-89"
+              class="text-input"
+              type="number"
+              step="0.001"
+            />
           </div>
 
           <div class="control-row">
             <label class="small-caption">Premium (93)</label>
-            <input id="price-input-93" class="text-input" type="number" step="0.001">
+            <input
+              id="price-input-93"
+              class="text-input"
+              type="number"
+              step="0.001"
+            />
           </div>
 
           <div class="control-row">
             <label class="small-caption">Diesel</label>
-            <input id="price-input-diesel" class="text-input" type="number" step="0.001">
+            <input
+              id="price-input-diesel"
+              class="text-input"
+              type="number"
+              step="0.001"
+            />
           </div>
 
           <div class="control-row">
             <label class="small-caption">Submitted by (optional)</label>
-            <input id="price-submitter-name" class="text-input" type="text" placeholder="Your name">
+            <input
+              id="price-submitter-name"
+              class="text-input"
+              type="text"
+              placeholder="Your name"
+            />
           </div>
 
           <div class="control-row">
             <label class="small-caption">Notes (optional)</label>
-            <input id="price-notes" class="text-input" type="text" placeholder="Anything else to add?">
+            <input
+              id="price-notes"
+              class="text-input"
+              type="text"
+              placeholder="Anything else to add?"
+            />
           </div>
         </div>
-
       </div>
 
-      <div class="modal-actions" style="margin-top:14px;display:flex;justify-content:flex-end;gap:8px;">
+      <div
+        class="modal-actions"
+        style="
+          margin-top: 14px;
+          display: flex;
+          justify-content: flex-end;
+          gap: 8px;
+        "
+      >
         <button class="secondary-btn" id="price-clear-btn">Clear</button>
         <button class="primary-btn" id="price-submit-btn">Submit</button>
       </div>
-
     </div>
   </div>
 
@@ -752,80 +840,134 @@
   <!-- ============================================================
        SUGGEST NEW STATION MODAL
   =============================================================== -->
-  <div class="modal-backdrop" id="suggest-modal" style="
-       display:none; position:fixed; inset:0;
-       background:rgba(15,23,42,0.78);
-       align-items:center; justify-content:center; z-index:350;">
-
-                <div class="modal-card" style="
-         width: 100%;
-         max-width: 520px;
-         margin: 0 auto;
-         padding: 22px 20px;
-         box-sizing: border-box;
-         background: var(--card-bg);">
-
-
-      <div class="modal-header" style="display:flex;justify-content:space-between;align-items:center;">
+    <!-- ============================================================
+       SUGGEST NEW STATION MODAL
+  =============================================================== -->
+  <div
+    class="modal-backdrop"
+    id="suggest-modal"
+    style="
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.78);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      box-sizing: border-box;
+      z-index: 350;
+    "
+  >
+    <div
+      class="modal-card"
+      style="
+        width: 100%;
+        max-width: 560px;
+        margin: 0 auto;
+        padding: 22px 24px;
+        box-sizing: border-box;
+        background: var(--card-bg);
+      "
+    >
+      <div
+        class="modal-header"
+        style="display: flex; justify-content: space-between; align-items: center;"
+      >
         <div>
-          <div class="modal-title" style="font-size:15px;font-weight:600;">Suggest a New Station</div>
-          <div class="small-caption" style="opacity:0.75;margin-top:2px;">
+          <div class="modal-title" style="font-size: 15px; font-weight: 600;">
+            Suggest a New Station
+          </div>
+          <div
+            class="small-caption"
+            style="opacity: 0.75; margin-top: 2px;"
+          >
             Add a station not currently shown in Tarcart.
           </div>
         </div>
-        <button class="icon-btn" id="suggest-modal-close" style="
-                border-radius:999px;border:1px solid rgba(148,163,184,0.55);
-                width:26px;height:26px;background:rgba(15,23,42,0.1);cursor:pointer;">✕</button>
+        <button
+          class="icon-btn"
+          id="suggest-modal-close"
+          style="
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.55);
+            width: 26px;
+            height: 26px;
+            background: rgba(15, 23, 42, 0.1);
+            cursor: pointer;
+          "
+        >
+          ✕
+        </button>
       </div>
 
-      <div class="modal-body" style="margin-top:12px;display:flex;gap:14px;flex-wrap:wrap;">
-        
-        <div class="modal-body-col" style="flex:1;min-width:200px;">
+      <div
+        class="modal-body"
+        style="
+          margin-top: 12px;
+          display: flex;
+          gap: 14px;
+          flex-wrap: wrap;
+        "
+      >
+        <div
+          class="modal-body-col"
+          style="flex: 1; min-width: 220px;"
+        >
           <div class="control-row">
             <label class="small-caption">Station Name</label>
-            <input id="new-station-name" class="text-input" type="text">
+            <input id="new-station-name" class="text-input" type="text" />
           </div>
 
           <div class="control-row">
             <label class="small-caption">Brand (optional)</label>
-            <input id="new-station-brand" class="text-input" type="text">
+            <input id="new-station-brand" class="text-input" type="text" />
           </div>
 
           <div class="control-row">
             <label class="small-caption">Notes (optional)</label>
-            <input id="new-station-notes" class="text-input" type="text">
+            <input id="new-station-notes" class="text-input" type="text" />
           </div>
         </div>
 
-        <div class="modal-body-col" style="flex:1;min-width:200px;">
+        <div
+          class="modal-body-col"
+          style="flex: 1; min-width: 220px;"
+        >
           <div class="control-row">
             <label class="small-caption">Address</label>
-            <input id="new-station-address" class="text-input" type="text">
+            <input id="new-station-address" class="text-input" type="text" />
           </div>
 
           <div class="control-row">
             <label class="small-caption">City</label>
-            <input id="new-station-city" class="text-input" type="text">
+            <input id="new-station-city" class="text-input" type="text" />
           </div>
 
           <div class="control-row">
             <label class="small-caption">State</label>
-            <input id="new-station-state" class="text-input" type="text">
+            <input id="new-station-state" class="text-input" type="text" />
           </div>
 
           <div class="control-row">
             <label class="small-caption">ZIP (optional)</label>
-            <input id="new-station-zip" class="text-input" type="text">
+            <input id="new-station-zip" class="text-input" type="text" />
           </div>
         </div>
-
       </div>
 
-      <div class="modal-actions" style="margin-top:14px;display:flex;justify-content:flex-end;gap:8px;">
+      <div
+        class="modal-actions"
+        style="
+          margin-top: 14px;
+          display: flex;
+          justify-content: flex-end;
+          gap: 8px;
+        "
+      >
         <button class="secondary-btn" id="suggest-cancel-btn">Cancel</button>
         <button class="primary-btn" id="suggest-submit-btn">Submit</button>
       </div>
-
     </div>
   </div>
 
