@@ -757,7 +757,17 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      color: inherit;
+    }
+
+    .contribute-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .contribute-buttons .secondary-btn {
+      flex: 1;
+      justify-content: center;
     }
 
     .secondary-btn:hover {
@@ -1011,6 +1021,16 @@
                   <span>⭐ Center on Shields</span>
                 </button>
               </div>
+              <div class="control-row">
+                <label>Contribute data</label>
+                <div class="contribute-buttons">
+                  <button class="secondary-btn" id="btn-submit-prices">🧾 Submit gas prices</button>
+                  <button class="secondary-btn" id="btn-suggest-station">➕ Suggest a new station</button>
+                </div>
+                <div class="small-caption">
+                  Your updates help keep prices fresh for Shields and the community.
+                </div>
+              </div>
             </div>
           </section>
         </div>
@@ -1037,6 +1057,102 @@
         <button class="secondary-btn" id="modal-directions-btn">
           🧭 Open in Google Maps
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submit prices modal -->
+  <div class="modal-backdrop" id="price-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">Submit gas prices</div>
+          <div class="small-caption">
+            Help keep prices fresh for Shields and nearby stations.
+          </div>
+        </div>
+        <button class="icon-btn" id="price-modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-body-col">
+          <label for="price-station-select" class="small-caption">Choose station</label>
+          <select id="price-station-select" class="select-input"></select>
+        </div>
+        <div class="modal-body-col">
+          <div class="control-row">
+            <label class="small-caption">Regular (87)</label>
+            <input id="price-input-87" class="text-input" type="number" step="0.001" placeholder="e.g. 3.459" />
+          </div>
+          <div class="control-row">
+            <label class="small-caption">Midgrade (89)</label>
+            <input id="price-input-89" class="text-input" type="number" step="0.001" placeholder="e.g. 3.659" />
+          </div>
+          <div class="control-row">
+            <label class="small-caption">Premium (93)</label>
+            <input id="price-input-93" class="text-input" type="number" step="0.001" placeholder="e.g. 3.899" />
+          </div>
+          <div class="control-row">
+            <label class="small-caption">Diesel</label>
+            <input id="price-input-diesel" class="text-input" type="number" step="0.001" placeholder="e.g. 4.199" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="secondary-btn" id="price-clear-btn">Clear</button>
+        <button class="primary-btn" id="price-submit-btn">Submit prices</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Suggest station modal -->
+  <div class="modal-backdrop" id="suggest-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">Suggest a new station</div>
+          <div class="small-caption">
+            Tell us about a station that isn't in Tarcart yet.
+          </div>
+        </div>
+        <button class="icon-btn" id="suggest-modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-body-col">
+          <div class="control-row">
+            <label class="small-caption">Station name</label>
+            <input id="new-station-name" class="text-input" type="text" placeholder="e.g. Marathon Gas" />
+          </div>
+          <div class="control-row">
+            <label class="small-caption">Brand (optional)</label>
+            <input id="new-station-brand" class="text-input" type="text" placeholder="e.g. Marathon" />
+          </div>
+        </div>
+        <div class="modal-body-col">
+          <div class="control-row">
+            <label class="small-caption">Address</label>
+            <input id="new-station-address" class="text-input" type="text" placeholder="Street address" />
+          </div>
+          <div class="control-row">
+            <label class="small-caption">City</label>
+            <input id="new-station-city" class="text-input" type="text" placeholder="City" />
+          </div>
+          <div class="control-row">
+            <label class="small-caption">State</label>
+            <input id="new-station-state" class="text-input" type="text" placeholder="FL" />
+          </div>
+          <div class="control-row">
+            <label class="small-caption">ZIP (optional)</label>
+            <input id="new-station-zip" class="text-input" type="text" placeholder="33162" />
+          </div>
+          <div class="control-row">
+            <label class="small-caption">Notes (optional)</label>
+            <input id="new-station-notes" class="text-input" type="text" placeholder="Any helpful details..." />
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="secondary-btn" id="suggest-cancel-btn">Cancel</button>
+        <button class="primary-btn" id="suggest-submit-btn">Submit station</button>
       </div>
     </div>
   </div>
@@ -1082,23 +1198,6 @@
     function dollarsFromCents(cents) {
       if (cents == null) return "—";
       return (cents / 100).toFixed(3);
-    }
-
-    // NEW: tolerate multiple possible keys per grade (e.g. "87", "REG", "regular")
-    const GRADE_KEY_GROUPS = {
-      "87": ["87", "REG", "reg", "regular", "unleaded"],
-      "89": ["89", "MID", "mid", "midgrade"],
-      "93": ["93", "PREM", "prem", "premium"],
-      diesel: ["diesel", "DSL", "dsl", "diesel2", "diesel #2"],
-    };
-
-    function getPriceForGrade(prices, gradeKey) {
-      if (!prices) return null;
-      const variants = GRADE_KEY_GROUPS[gradeKey] || [gradeKey];
-      for (const key of variants) {
-        if (prices[key] != null) return prices[key];
-      }
-      return null;
     }
 
     function distanceMiles(lat1, lon1, lat2, lon2) {
@@ -1401,7 +1500,7 @@
 
         const prices = document.createElement("div");
         prices.className = "station-prices";
-        const p87 = getPriceForGrade(st.prices_cents, "87"); // UPDATED
+        const p87 = st.prices_cents?.["87"];
         if (p87 != null) {
           const pill = document.createElement("div");
           pill.className = "price-pill";
@@ -1430,7 +1529,7 @@
         ];
 
         priceDefs.forEach(([key, label]) => {
-          const cents = getPriceForGrade(st.prices_cents, key); // UPDATED
+          const cents = st.prices_cents && st.prices_cents[key];
           const rowPrice = document.createElement("div");
           rowPrice.className = "mini-map-row";
 
@@ -1440,8 +1539,7 @@
 
           const priceSpan = document.createElement("span");
           priceSpan.className = "mini-map-price";
-          priceSpan.textContent =
-            cents != null ? "$" + dollarsFromCents(cents) : "—";
+          priceSpan.textContent = cents != null ? "$" + dollarsFromCents(cents) : "—";
 
           rowPrice.appendChild(labelSpan);
           rowPrice.appendChild(priceSpan);
@@ -1477,22 +1575,9 @@
 
       const prices = document.getElementById("modal-prices");
       prices.innerHTML = "<strong>Prices:</strong><br/>";
-
-      const modalGrades = [
-        ["87", "Regular 87"],
-        ["89", "Midgrade 89"],
-        ["93", "Premium 93"],
-        ["diesel", "Diesel"],
-      ];
-
-      modalGrades.forEach(([key, label]) => {
-        const cents = getPriceForGrade(station.prices_cents, key);
-        prices.innerHTML +=
-          label +
-          ": " +
-          (cents != null ? "$" + dollarsFromCents(cents) : "—") +
-          "<br/>";
-      });
+      const p87 = station.prices_cents?.["87"];
+      prices.innerHTML +=
+        "Regular 87: " + (p87 != null ? "$" + dollarsFromCents(p87) : "—");
 
       const meta = document.getElementById("modal-meta");
       meta.innerHTML = "<strong>Meta:</strong><br/>";
@@ -1549,6 +1634,161 @@
     function closeStationModal() {
       document.getElementById("station-modal").classList.remove("active");
       modalMap = null;
+    }
+
+    // --- Contribution modals ---------------------------------------------------
+
+    function openPriceSubmissionModal() {
+      const backdrop = document.getElementById("price-modal");
+      const select = document.getElementById("price-station-select");
+      if (!backdrop || !select) return;
+
+      // Populate station dropdown
+      select.innerHTML = "";
+      TarcartStore.stations.forEach((st) => {
+        const opt = document.createElement("option");
+        opt.value = st.id;
+        opt.textContent = st.name || `Station ${st.id}`;
+        if (st.id === HOME_STATION_ID || st.is_home) {
+          opt.textContent += " (Shields)";
+        }
+        select.appendChild(opt);
+      });
+
+      backdrop.classList.add("active");
+    }
+
+    function clearPriceSubmissionInputs() {
+      ["price-input-87", "price-input-89", "price-input-93", "price-input-diesel"].forEach(
+        (id) => {
+          const el = document.getElementById(id);
+          if (el) el.value = "";
+        }
+      );
+    }
+
+    function closePriceSubmissionModal() {
+      const backdrop = document.getElementById("price-modal");
+      if (backdrop) backdrop.classList.remove("active");
+    }
+
+    async function submitPriceSubmission() {
+      const select = document.getElementById("price-station-select");
+      if (!select) return;
+
+      const stationId = Number(select.value);
+      const grades = [
+        ["87", "price-input-87"],
+        ["89", "price-input-89"],
+        ["93", "price-input-93"],
+        ["diesel", "price-input-diesel"],
+      ];
+
+      const submissions = [];
+
+      grades.forEach(([grade, inputId]) => {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        const raw = input.value.trim();
+        if (!raw) return;
+        const priceNumber = Number(raw);
+        if (!isNaN(priceNumber) && priceNumber > 0) {
+          submissions.push({ grade, price: priceNumber });
+        }
+      });
+
+      if (!stationId || submissions.length === 0) {
+        showToast("Select a station and enter at least one price.");
+        return;
+      }
+
+      try {
+        const res = await fetch(API_BASE + "/api/price-submissions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            station_id: stationId,
+            submissions,
+            source: "gas-web",
+          }),
+        });
+
+        if (!res.ok) throw new Error("Bad response");
+
+        showToast("Thanks! Your price update was submitted.");
+        clearPriceSubmissionInputs();
+        closePriceSubmissionModal();
+      } catch (err) {
+        console.error(err);
+        showToast("Sorry, we couldn't submit prices right now.");
+      }
+    }
+
+    function openSuggestStationModal() {
+      const backdrop = document.getElementById("suggest-modal");
+      if (!backdrop) return;
+      backdrop.classList.add("active");
+    }
+
+    function closeSuggestStationModal() {
+      const backdrop = document.getElementById("suggest-modal");
+      if (!backdrop) return;
+      backdrop.classList.remove("active");
+    }
+
+    async function submitSuggestStation() {
+      const name = document.getElementById("new-station-name")?.value.trim() || "";
+      const brand = document.getElementById("new-station-brand")?.value.trim() || "";
+      const address =
+        document.getElementById("new-station-address")?.value.trim() || "";
+      const city = document.getElementById("new-station-city")?.value.trim() || "";
+      const state =
+        document.getElementById("new-station-state")?.value.trim() || "";
+      const zip = document.getElementById("new-station-zip")?.value.trim() || "";
+      const notes =
+        document.getElementById("new-station-notes")?.value.trim() || "";
+
+      if (!name || !city) {
+        showToast("Please enter at least a station name and city.");
+        return;
+      }
+
+      const payload = {
+        name,
+        brand,
+        address,
+        city,
+        state,
+        postal_code: zip,
+        notes,
+        source: "gas-web",
+      };
+
+      try {
+        const res = await fetch(
+          API_BASE + "/api/price-submissions/new-station",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }
+        );
+
+        if (!res.ok) throw new Error("Bad response");
+
+        showToast("Thanks! Your station suggestion was submitted.");
+        closeSuggestStationModal();
+
+        ["new-station-name","new-station-brand","new-station-address","new-station-city","new-station-state","new-station-zip","new-station-notes"].forEach(
+          (id) => {
+            const el = document.getElementById(id);
+            if (el) el.value = "";
+          }
+        );
+      } catch (err) {
+        console.error(err);
+        showToast("Sorry, we couldn't submit that station right now.");
+      }
     }
 
     // --- Filtering -------------------------------------------------------------
@@ -1697,11 +1937,11 @@
         .addEventListener("click", async () => {
           await loadStations();
 
-          waitForGoogleMapsReady(() => {
-            TarcartStore.googleReady = true;
-            if (!TarcartStore.map) initMap();
-            syncMapMarkers();
-          });
+      waitForGoogleMapsReady(() => {
+        TarcartStore.googleReady = true;
+        if (!TarcartStore.map) initMap();
+        syncMapMarkers();
+      });
 
           showToast("Station data refreshed.");
         });
@@ -1714,6 +1954,44 @@
         .addEventListener("click", (e) => {
           if (e.target.id === "station-modal") closeStationModal();
         });
+
+      document
+        .getElementById("btn-submit-prices")
+        .addEventListener("click", openPriceSubmissionModal);
+
+      document
+        .getElementById("btn-suggest-station")
+        .addEventListener("click", openSuggestStationModal);
+
+      document
+        .getElementById("price-modal-close")
+        .addEventListener("click", closePriceSubmissionModal);
+      document
+        .getElementById("price-modal")
+        .addEventListener("click", (e) => {
+          if (e.target.id === "price-modal") closePriceSubmissionModal();
+        });
+      document
+        .getElementById("price-submit-btn")
+        .addEventListener("click", submitPriceSubmission);
+      document
+        .getElementById("price-clear-btn")
+        .addEventListener("click", clearPriceSubmissionInputs);
+
+      document
+        .getElementById("suggest-modal-close")
+        .addEventListener("click", closeSuggestStationModal);
+      document
+        .getElementById("suggest-modal")
+        .addEventListener("click", (e) => {
+          if (e.target.id === "suggest-modal") closeSuggestStationModal();
+        });
+      document
+        .getElementById("suggest-submit-btn")
+        .addEventListener("click", submitSuggestStation);
+      document
+        .getElementById("suggest-cancel-btn")
+        .addEventListener("click", closeSuggestStationModal);
 
       await loadStations();
 
