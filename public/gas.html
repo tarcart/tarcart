@@ -21,9 +21,9 @@
 
   <!-- Google Maps JS (replace key!) -->
   <script
-  id="gmaps-script"
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAt74rhQgMZZO-KONJ_JTsBTnH3hr63a7M"
-></script>
+    id="gmaps-script"
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAt74rhQgMZZO-KONJ_JTsBTnH3hr63a7M"
+  ></script>
 
   <style>
     :root {
@@ -538,7 +538,6 @@
       opacity: 0.85;
     }
 
-    
     .mini-map {
       width: 100%;
       height: 110px;
@@ -576,7 +575,8 @@
     .mini-map-price {
       font-weight: 700;
     }
-/* Right column card */
+
+    /* Right column card */
 
     .control-stack {
       display: flex;
@@ -1084,6 +1084,23 @@
       return (cents / 100).toFixed(3);
     }
 
+    // NEW: tolerate multiple possible keys per grade (e.g. "87", "REG", "regular")
+    const GRADE_KEY_GROUPS = {
+      "87": ["87", "REG", "reg", "regular", "unleaded"],
+      "89": ["89", "MID", "mid", "midgrade"],
+      "93": ["93", "PREM", "prem", "premium"],
+      diesel: ["diesel", "DSL", "dsl", "diesel2", "diesel #2"],
+    };
+
+    function getPriceForGrade(prices, gradeKey) {
+      if (!prices) return null;
+      const variants = GRADE_KEY_GROUPS[gradeKey] || [gradeKey];
+      for (const key of variants) {
+        if (prices[key] != null) return prices[key];
+      }
+      return null;
+    }
+
     function distanceMiles(lat1, lon1, lat2, lon2) {
       const R = 3958.8;
       const toRad = (deg) => (deg * Math.PI) / 180;
@@ -1129,6 +1146,7 @@
       else if (next === "light") label.textContent = "Light";
       else label.textContent = "System";
     }
+
     function waitForGoogleMapsReady(callback) {
       if (window.google && window.google.maps) {
         callback();
@@ -1148,7 +1166,6 @@
         }
       }, 300);
     }
-
 
     // --- API -------------------------------------------------------------------
 
@@ -1174,10 +1191,6 @@
         fullscreenControl: true,
         styles: [],
       });
-
-      // Basic traffic toggle (optional later)
-      // const trafficLayer = new google.maps.TrafficLayer();
-      // trafficLayer.setMap(TarcartStore.map);
     }
 
     function clearMarkers() {
@@ -1228,7 +1241,7 @@
             ? Number(rawLng)
             : null;
 
-        // If this is Shields and coords are bad, fall back to the hard‑coded home coords
+        // If this is Shields and coords are bad, fall back to the hard-coded home coords
         if (isShields && (!Number.isFinite(lat) || !Number.isFinite(lng))) {
           lat = SHIELDS_COORDS.lat;
           lng = SHIELDS_COORDS.lng;
@@ -1388,7 +1401,7 @@
 
         const prices = document.createElement("div");
         prices.className = "station-prices";
-        const p87 = st.prices_cents?.["87"];
+        const p87 = getPriceForGrade(st.prices_cents, "87"); // UPDATED
         if (p87 != null) {
           const pill = document.createElement("div");
           pill.className = "price-pill";
@@ -1417,7 +1430,7 @@
         ];
 
         priceDefs.forEach(([key, label]) => {
-          const cents = st.prices_cents && st.prices_cents[key];
+          const cents = getPriceForGrade(st.prices_cents, key); // UPDATED
           const rowPrice = document.createElement("div");
           rowPrice.className = "mini-map-row";
 
@@ -1427,7 +1440,8 @@
 
           const priceSpan = document.createElement("span");
           priceSpan.className = "mini-map-price";
-          priceSpan.textContent = cents != null ? "$" + dollarsFromCents(cents) : "—";
+          priceSpan.textContent =
+            cents != null ? "$" + dollarsFromCents(cents) : "—";
 
           rowPrice.appendChild(labelSpan);
           rowPrice.appendChild(priceSpan);
@@ -1463,9 +1477,22 @@
 
       const prices = document.getElementById("modal-prices");
       prices.innerHTML = "<strong>Prices:</strong><br/>";
-      const p87 = station.prices_cents?.["87"];
-      prices.innerHTML +=
-        "Regular 87: " + (p87 != null ? "$" + dollarsFromCents(p87) : "—");
+
+      const modalGrades = [
+        ["87", "Regular 87"],
+        ["89", "Midgrade 89"],
+        ["93", "Premium 93"],
+        ["diesel", "Diesel"],
+      ];
+
+      modalGrades.forEach(([key, label]) => {
+        const cents = getPriceForGrade(station.prices_cents, key);
+        prices.innerHTML +=
+          label +
+          ": " +
+          (cents != null ? "$" + dollarsFromCents(cents) : "—") +
+          "<br/>";
+      });
 
       const meta = document.getElementById("modal-meta");
       meta.innerHTML = "<strong>Meta:</strong><br/>";
@@ -1670,11 +1697,11 @@
         .addEventListener("click", async () => {
           await loadStations();
 
-      waitForGoogleMapsReady(() => {
-        TarcartStore.googleReady = true;
-        if (!TarcartStore.map) initMap();
-        syncMapMarkers();
-      });
+          waitForGoogleMapsReady(() => {
+            TarcartStore.googleReady = true;
+            if (!TarcartStore.map) initMap();
+            syncMapMarkers();
+          });
 
           showToast("Station data refreshed.");
         });
