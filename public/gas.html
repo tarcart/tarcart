@@ -1360,22 +1360,22 @@
 `;
 
         const right = document.createElement("div");
-        right.className = "mini-map";
-        right.style.cssText = `
-          background:radial-gradient(circle at top,#020617,#000);
-          color:#e5e7eb;
-          padding:8px;
-          border-radius:12px;
-          border:1px solid rgba(148,163,184,0.55);
-          font-size:11px;
-        `;
+right.className = "mini-map";
+right.style.cssText = `
+  background:radial-gradient(circle at top,#020617,#000);
+  color:#e5e7eb;
+  padding:8px;
+  border-radius:12px;
+  border:1px solid rgba(148,163,184,0.55);
+  font-size:11px;
+`;
 
-        const p87 = st.prices_cents?.["87"];
-        const p89 = st.prices_cents?.["89"];
-        const p93 = st.prices_cents?.["93"];
-        const pd = st.prices_cents?.["diesel"];
+const p87 = st.prices_cents?.["87"];
+const p89 = st.prices_cents?.["89"];
+const p93 = st.prices_cents?.["93"];
+const pd  = st.prices_cents?.["diesel"];
 
-
+right.innerHTML = `
   <div class="mini-map-row">
     <span class="price-label price-regular">Regular</span>
     <span class="price-value price-regular">
