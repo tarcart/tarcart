@@ -650,41 +650,35 @@
 
           <!-- LEFT: MAP / LIST CARD -->
           <section class="card">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Gas station map</div>
-                <div class="card-subtitle">
-                  Network overview • tap station markers for details
-                </div>
-              </div>
+  <div class="card-header">
+    <div>
+      <div class="card-title">Gas station map</div>
+      <div class="card-subtitle">
+        Network overview • tap station markers for details
+      </div>
+    </div>
 
-<!-- List sort controls (shown when List view is active) -->
-<div class="list-sort-row" id="list-sort-row">
-  <span class="list-sort-label">Sort list by</span>
-  <div class="pill-row">
-    <button class="pill-toggle active" id="sort-distance-btn">Distance</button>
-    <button class="pill-toggle" id="sort-price-btn">Regular price</button>
+    <div class="pill-row">
+      <button class="pill-toggle active" id="toggle-map-view">Map</button>
+      <button class="pill-toggle" id="toggle-list-view">List</button>
+    </div>
   </div>
-</div>
 
-<!-- Google map container -->
-<div id="map-container"></div>
+  <!-- List sort controls (shown when List view is active) -->
+  <div class="list-sort-row" id="list-sort-row">
+    <span class="list-sort-label">Sort list by</span>
+    <div class="pill-row">
+      <button class="pill-toggle active" id="sort-distance-btn">Distance</button>
+      <button class="pill-toggle" id="sort-price-btn">Regular price</button>
+    </div>
+  </div>
 
+  <!-- Single Google map container -->
+  <div id="map-container"></div>
 
-              <div class="pill-row">
-                <button class="pill-toggle active" id="toggle-map-view">Map</button>
-                <button class="pill-toggle" id="toggle-list-view">List</button>
-              </div>
-            </div>
-
-            <!-- Google map container -->
-            <div id="map-container"></div>
-
-            <!-- Hidden list container -->
-            <div id="stations-list" style="display:none;"></div>
-
-          </section>
-
+  <!-- Hidden list container -->
+  <div id="stations-list" style="display:none;"></div>
+</section>
 
           <!-- RIGHT: FILTERS + CONTRIBUTE -->
           <section class="card">
@@ -1144,19 +1138,6 @@
       BASIC STORE & CONSTANTS
     ==============================================================*/
     const TarcartStore = {
-      stations: [],
-      filteredStations: [],
-      shieldsStation: null,
-      googleReady: false,
-      map: null,
-      markers: [],
-      markerCluster: null,
-      view: "map",
-      radiusMiles: 5,
-      searchQuery: "",
-    };
-
-TarcartStore = {
   stations: [],
   filteredStations: [],
   shieldsStation: null,
@@ -1910,10 +1891,10 @@ function updateBestPriceCard(list) {
 
 
     /*==============================================================
-      VIEW SWITCHING
-    ==============================================================*/
-    const toggleMapBtn = document.getElementById("toggle-map-view");
-    const toggleListBtn = document.getElementById("toggle-list-view");
+  VIEW SWITCHING
+==============================================================*/
+const toggleMapBtn = document.getElementById("toggle-map-view");
+const toggleListBtn = document.getElementById("toggle-list-view");
 const sortDistanceBtn = document.getElementById("sort-distance-btn");
 const sortPriceBtn = document.getElementById("sort-price-btn");
 const listSortRow = document.getElementById("list-sort-row");
@@ -1929,46 +1910,6 @@ function applySortButtons() {
   }
 }
 
-    toggleMapBtn.addEventListener("click", () => {
-      TarcartStore.view = "map";
-      applyView();
-    });
-
-    toggleListBtn.addEventListener("click", () => {
-      TarcartStore.view = "list";
-      applyView();
-      renderStationList();
-    });
-
-// NEW: sort buttons
-if (sortDistanceBtn) {
-  sortDistanceBtn.addEventListener("click", () => {
-    TarcartStore.sortBy = "distance";
-    applySortButtons();
-    recomputeFilteredStations();
-    renderStationList();
-  });
-}
-
-if (sortPriceBtn) {
-  sortPriceBtn.addEventListener("click", () => {
-    TarcartStore.sortBy = "price";
-    applySortButtons();
-    recomputeFilteredStations();
-    renderStationList();
-  });
-}
-    document.getElementById("nav-map-view").addEventListener("click", () => {
-      TarcartStore.view = "map";
-      applyView();
-    });
-
-    document.getElementById("nav-list-view").addEventListener("click", () => {
-      TarcartStore.view = "list";
-      applyView();
-      renderStationList();
-    });
-
 toggleMapBtn.addEventListener("click", () => {
   TarcartStore.view = "map";
   applyView();
@@ -1980,7 +1921,7 @@ toggleListBtn.addEventListener("click", () => {
   renderStationList();
 });
 
-// NEW: sort buttons
+// sort buttons
 if (sortDistanceBtn) {
   sortDistanceBtn.addEventListener("click", () => {
     TarcartStore.sortBy = "distance";
@@ -1999,8 +1940,18 @@ if (sortPriceBtn) {
   });
 }
 
+document.getElementById("nav-map-view").addEventListener("click", () => {
+  TarcartStore.view = "map";
+  applyView();
+});
 
-    function applyView() {
+document.getElementById("nav-list-view").addEventListener("click", () => {
+  TarcartStore.view = "list";
+  applyView();
+  renderStationList();
+});
+
+function applyView() {
   const mapEl = document.getElementById("map-container");
   const listEl = document.getElementById("stations-list");
 
