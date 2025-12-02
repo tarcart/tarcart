@@ -1427,7 +1427,7 @@
 
     left.innerHTML = `
       <div class="station-name" style="font-size:13px;font-weight:600;">
-        ${st.name || "Station"}
+        ${(st.id === HOME_STATION_ID || st.is_home) ? "SHIELDS" : (st.name || "Station")}
       </div>
 
       <div class="station-meta" style="font-size:11px;opacity:0.8;">
@@ -1530,7 +1530,9 @@ function updateBestPriceCard(list) {
   const p93 = st.prices_cents?.["93"];
   const pd  = st.prices_cents?.["diesel"];
 
-  const name = st.name || "Station";
+  const name = (st.id === HOME_STATION_ID || st.is_home)
+  ? "SHIELDS"
+  : (st.name || "Station");
   const line2 = `${st.address || ""} ${st.city || ""} ${st.state || ""}`.trim();
   const distance = st.distance != null ? `${st.distance.toFixed(1)} mi` : "";
   const mapsQuery = encodeURIComponent(
@@ -1587,7 +1589,10 @@ function updateBestPriceCard(list) {
       const backdrop = document.getElementById("station-modal");
       backdrop.style.display = "flex";
 
-      document.getElementById("modal-title").textContent = st.name || "Station";
+      document.getElementById("modal-title").textContent =
+  (st.id === HOME_STATION_ID || st.is_home)
+    ? "SHIELDS"
+    : (st.name || "Station");
       document.getElementById("modal-subtitle").textContent =
         `${st.address || ""} ${st.city || ""} ${st.state || ""}`;
 
@@ -1662,7 +1667,7 @@ function updateBestPriceCard(list) {
     const street = st.address ? st.address.split(",")[0].trim() : "";
     let label = street ? `${st.name} — ${street}` : st.name;
 
-    if (st.id === HOME_STATION_ID || st.is_home) label += " (Shields)";
+    if (st.id === HOME_STATION_ID || st.is_home) label = "SHIELDS";
 
     opt.textContent = label;
     select.appendChild(opt);
