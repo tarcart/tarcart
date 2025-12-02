@@ -1454,19 +1454,25 @@
       SUBMIT PRICES — LOGIC
     ==============================================================*/
     function openPriceSubmissionModal() {
-      document.getElementById("price-modal").style.display = "flex";
+  document.getElementById("price-modal").style.display = "flex";
 
-      const select = document.getElementById("price-station-select");
-      select.innerHTML = "";
+  const select = document.getElementById("price-station-select");
+  select.innerHTML = "";
 
-      TarcartStore.stations.forEach(st => {
-        const opt = document.createElement("option");
-        opt.value = st.id;
-        opt.textContent = st.name || `Station ${st.id}`;
-        if (st.id === HOME_STATION_ID || st.is_home) opt.textContent += " (Shields)";
-        select.appendChild(opt);
-      });
-    }
+  TarcartStore.stations.forEach(st => {
+    const opt = document.createElement("option");
+    opt.value = st.id;
+
+    // Add street under name: "Shields Bazaar — 12300 Biscayne Blvd"
+    const street = st.address ? st.address.split(",")[0].trim() : "";
+    let label = street ? `${st.name} — ${street}` : st.name;
+
+    if (st.id === HOME_STATION_ID || st.is_home) label += " (Shields)";
+
+    opt.textContent = label;
+    select.appendChild(opt);
+  });
+}
 
     function closePriceSubmissionModal() {
       document.getElementById("price-modal").style.display = "none";
