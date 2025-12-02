@@ -702,21 +702,7 @@
               </p>
             </div>
 
-            <div class="page-header-right">
-              <div class="login-card">
-                <label for="password-input">Admin password</label>
-                <input
-                  type="password"
-                  id="password-input"
-                  class="login-input"
-                  placeholder="Enter admin password…"
-                />
-                <button id="login-btn" class="login-button">Sign in</button>
-                <span id="login-status" class="login-status"></span>
-              </div>
-            </div>
-          </div>
-
+            
           <div id="global-status" class="status-bar"></div>
 
           <!-- SUBMISSIONS SECTION -->
@@ -846,9 +832,6 @@
   <script>
     const API_BASE = "https://octopus-app-v54dv.ondigitalocean.app";
 
-    const passwordInput = document.getElementById("password-input");
-    const loginBtn = document.getElementById("login-btn");
-    const loginStatus = document.getElementById("login-status");
     const globalStatus = document.getElementById("global-status");
     const tbody = document.getElementById("submissions-tbody");
     const statusChips = document.querySelectorAll(".status-chip");
@@ -1162,56 +1145,7 @@
       }
     }
 
-    // Login flow
-    loginBtn.addEventListener("click", async () => {
-      const pwd = passwordInput.value.trim();
-      if (!pwd) {
-        loginStatus.textContent = "Please enter the admin password.";
-        loginStatus.className = "login-status err";
-        return;
-      }
-
-      loginBtn.disabled = true;
-      loginStatus.textContent = "Signing in…";
-      loginStatus.className = "login-status";
-
-      try {
-        const res = await fetch(API_BASE + "/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ password: pwd })
-        });
-
-        if (!res.ok) {
-          if (res.status === 401) {
-            loginStatus.textContent = "Invalid password.";
-            loginStatus.className = "login-status err";
-            return;
-          }
-          throw new Error("HTTP " + res.status);
-        }
-
-        const data = await res.json();
-        if (!data.token) {
-          loginStatus.textContent = "Login response missing token.";
-          loginStatus.className = "login-status err";
-          return;
-        }
-
-        adminToken = data.token;
-        localStorage.setItem("tarcart-admin-token", adminToken);
-        loginStatus.textContent = "Signed in. Loading submissions…";
-        loginStatus.className = "login-status ok";
-        loadSubmissions("pending");
-      } catch (err) {
-        console.error("Login failed", err);
-        loginStatus.textContent = "Login failed. See console logs.";
-        loginStatus.className = "login-status err";
-      } finally {
-        loginBtn.disabled = false;
-      }
-    });
-
+    
     // Status filter click handlers
     statusChips.forEach((chip) => {
       chip.addEventListener("click", () => {
@@ -1432,11 +1366,15 @@
     loadSpreadAnalytics();
 
     // Auto-load submissions if session exists
-    if (adminToken) {
-      loginStatus.textContent = "Using saved session.";
-      loginStatus.className = "login-status ok";
-      loadSubmissions("pending");
-    }
+    // Auto-load submissions if session exists
+if (adminToken) {
+  globalStatus.textContent = "Using saved admin session.";
+  globalStatus.className = "status-bar ok";
+  loadSubmissions("pending");
+} else {
+  globalStatus.textContent = "No admin session found. Please log in from the main gas console.";
+  globalStatus.className = "status-bar err";
+}
   </script>
 </body>
 </html>
