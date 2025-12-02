@@ -415,6 +415,20 @@
       background: #020617;
     }
 
+.list-sort-row {
+  display: none;              /* shown only in List view via JS */
+  justify-content: space-between;
+  align-items: center;
+  margin: 4px 0 8px;
+  padding: 4px 10px 0;
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+.list-sort-label {
+  opacity: 0.8;
+}
+
     /* ===== Inputs & Buttons =========================================== */
 
     label {
@@ -643,6 +657,19 @@
                   Network overview • tap station markers for details
                 </div>
               </div>
+
+<!-- List sort controls (shown when List view is active) -->
+<div class="list-sort-row" id="list-sort-row">
+  <span class="list-sort-label">Sort list by</span>
+  <div class="pill-row">
+    <button class="pill-toggle active" id="sort-distance-btn">Distance</button>
+    <button class="pill-toggle" id="sort-price-btn">Regular price</button>
+  </div>
+</div>
+
+<!-- Google map container -->
+<div id="map-container"></div>
+
 
               <div class="pill-row">
                 <button class="pill-toggle active" id="toggle-map-view">Map</button>
@@ -1128,6 +1155,20 @@
       radiusMiles: 5,
       searchQuery: "",
     };
+
+TarcartStore = {
+  stations: [],
+  filteredStations: [],
+  shieldsStation: null,
+  googleReady: false,
+  map: null,
+  markers: [],
+  markerCluster: null,
+  view: "map",
+  radiusMiles: 5,
+  searchQuery: "",
+  sortBy: "distance",        // "distance" | "price"
+};
 
     const HOME_STATION_ID = 1;    // Shields station ID
     const SHIELDS_COORDS = { lat: 25.88951, lng: -80.16406 };
@@ -1834,9 +1875,38 @@ function updateBestPriceCard(list) {
         out.push(st);
       });
 
-      out.sort((a, b) => a.distance - b.distance);
-      TarcartStore.filteredStations = out;
-    }
+        // Sort filtered stations
+  if (TarcartStore.sortBy === "price") {
+    // Sort by Regular (87) price first; stations without price go last.
+    out.sort((a, b) => {
+      const pricesA = a.prices_cents || {};
+      const pricesB = b.prices_cents || {};
+      const pA = pricesA["87"];
+      const pB = pricesB["87"];
+
+      const hasA = pA != null;
+      const hasB = pB != null;
+
+      // If both have prices, sort by price, then distance as tiebreaker
+      if (hasA && hasB) {
+        if (pA !== pB) return pA - pB;
+        return (a.distance || 0) - (b.distance || 0);
+      }
+
+      // If only one has a price, that one comes first
+      if (hasA && !hasB) return -1;
+      if (!hasA && hasB) return 1;
+
+      // If neither has price, fall back to distance
+      return (a.distance || 0) - (b.distance || 0);
+    });
+  } else {
+    // Default: sort by distance
+    out.sort((a, b) => (a.distance || 0) - (b.distance || 0));
+  }
+
+  TarcartStore.filteredStations = out;
+}
 
 
     /*==============================================================
@@ -1844,6 +1914,20 @@ function updateBestPriceCard(list) {
     ==============================================================*/
     const toggleMapBtn = document.getElementById("toggle-map-view");
     const toggleListBtn = document.getElementById("toggle-list-view");
+const sortDistanceBtn = document.getElementById("sort-distance-btn");
+const sortPriceBtn = document.getElementById("sort-price-btn");
+const listSortRow = document.getElementById("list-sort-row");
+
+function applySortButtons() {
+  if (!sortDistanceBtn || !sortPriceBtn) return;
+  if (TarcartStore.sortBy === "price") {
+    sortPriceBtn.classList.add("active");
+    sortDistanceBtn.classList.remove("active");
+  } else {
+    sortDistanceBtn.classList.add("active");
+    sortPriceBtn.classList.remove("active");
+  }
+}
 
     toggleMapBtn.addEventListener("click", () => {
       TarcartStore.view = "map";
@@ -1856,6 +1940,24 @@ function updateBestPriceCard(list) {
       renderStationList();
     });
 
+// NEW: sort buttons
+if (sortDistanceBtn) {
+  sortDistanceBtn.addEventListener("click", () => {
+    TarcartStore.sortBy = "distance";
+    applySortButtons();
+    recomputeFilteredStations();
+    renderStationList();
+  });
+}
+
+if (sortPriceBtn) {
+  sortPriceBtn.addEventListener("click", () => {
+    TarcartStore.sortBy = "price";
+    applySortButtons();
+    recomputeFilteredStations();
+    renderStationList();
+  });
+}
     document.getElementById("nav-map-view").addEventListener("click", () => {
       TarcartStore.view = "map";
       applyView();
@@ -1867,22 +1969,57 @@ function updateBestPriceCard(list) {
       renderStationList();
     });
 
-    function applyView() {
-      const mapEl = document.getElementById("map-container");
-      const listEl = document.getElementById("stations-list");
+toggleMapBtn.addEventListener("click", () => {
+  TarcartStore.view = "map";
+  applyView();
+});
 
-      if (TarcartStore.view === "map") {
-        mapEl.style.display = "block";
-        listEl.style.display = "none";
-        toggleMapBtn.classList.add("active");
-        toggleListBtn.classList.remove("active");
-      } else {
-        mapEl.style.display = "none";
-        listEl.style.display = "block";
-        toggleMapBtn.classList.remove("active");
-        toggleListBtn.classList.add("active");
-      }
-    }
+toggleListBtn.addEventListener("click", () => {
+  TarcartStore.view = "list";
+  applyView();
+  renderStationList();
+});
+
+// NEW: sort buttons
+if (sortDistanceBtn) {
+  sortDistanceBtn.addEventListener("click", () => {
+    TarcartStore.sortBy = "distance";
+    applySortButtons();
+    recomputeFilteredStations();
+    renderStationList();
+  });
+}
+
+if (sortPriceBtn) {
+  sortPriceBtn.addEventListener("click", () => {
+    TarcartStore.sortBy = "price";
+    applySortButtons();
+    recomputeFilteredStations();
+    renderStationList();
+  });
+}
+
+
+    function applyView() {
+  const mapEl = document.getElementById("map-container");
+  const listEl = document.getElementById("stations-list");
+
+  if (TarcartStore.view === "map") {
+    mapEl.style.display = "block";
+    listEl.style.display = "none";
+    toggleMapBtn.classList.add("active");
+    toggleListBtn.classList.remove("active");
+    if (listSortRow) listSortRow.style.display = "none";
+  } else {
+    mapEl.style.display = "none";
+    listEl.style.display = "block";
+    toggleListBtn.classList.add("active");
+    toggleMapBtn.classList.remove("active");
+    if (listSortRow) listSortRow.style.display = "flex";
+  }
+
+  applySortButtons();
+}
 
 
     /*==============================================================
