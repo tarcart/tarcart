@@ -188,6 +188,67 @@
       box-shadow: none;
     }
 
+    .sidebar-best-card {
+      margin-top: 10px;
+      padding: 10px 11px;
+      border-radius: var(--radius-md);
+      background: radial-gradient(circle at top, rgba(34,197,94,0.18), rgba(15,23,42,0.96));
+      border: 1px solid rgba(34,197,94,0.45);
+      box-shadow: 0 16px 40px rgba(15,23,42,0.85);
+      font-size: 11px;
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .sidebar-best-card .best-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #a7f3d0;
+      opacity: 0.9;
+    }
+
+    .sidebar-best-card .best-name {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .sidebar-best-card .best-meta,
+    .sidebar-best-card .best-distance {
+      opacity: 0.8;
+    }
+
+    .sidebar-best-card .best-price-row {
+      margin-top: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-weight: 600;
+    }
+
+    .sidebar-best-card .best-price-label {
+      color: #bfdbfe;
+    }
+
+    .sidebar-best-card .best-price-value {
+      color: #bbf7d0;
+      font-size: 13px;
+    }
+
+    .sidebar-best-card .best-link {
+      margin-top: 4px;
+      font-size: 10px;
+      text-decoration: none;
+      color: #93c5fd;
+    }
+
+    .sidebar-best-card .best-link:hover {
+      text-decoration: underline;
+      color: #bfdbfe;
+    }
+
     /* ===== Header (top-right login) ==================================== */
 
     .tarcart-main {
@@ -527,7 +588,8 @@
         <div class="sidebar-chip">Shields is home — North Miami Beach, FL</div>
       </div>
 
-      <!-- NAVIGATION -->
+    
+        <!-- NAVIGATION -->
       <nav class="sidebar-nav">
 
         <button class="sidebar-nav-btn" id="nav-map-view">
@@ -543,7 +605,10 @@
         </button>
 
       </nav>
-
+      <div id="best-price-card" class="sidebar-best-card">
+        <div class="best-title">Lowest Regular Nearby</div>
+        <div class="best-empty">Loading best price…</div>
+      </div>
     </aside>
 
     <!-- ============================
@@ -1308,108 +1373,158 @@
       RENDER STATION LIST
     ==============================================================*/
     function renderStationList() {
-      const container = document.getElementById("stations-list");
-      container.innerHTML = "";
-      const list = TarcartStore.filteredStations;
+  const container = document.getElementById("stations-list");
+  container.innerHTML = "";
+  const list = TarcartStore.filteredStations;
 
-      // Update left sidebar live-data chip
-      document.getElementById("sidebar-live-data").textContent =
-        `Live data — ${list.length} stations`;
+  // Update left sidebar live-data chip
+  document.getElementById("sidebar-live-data").textContent =
+    `Live data — ${list.length} stations`;
 
-      // Update right card counter
-      document.getElementById("station-count").textContent = list.length;
+  // Update right card counter
+  document.getElementById("station-count").textContent = list.length;
 
-      list.forEach(st => {
-        const row = document.createElement("div");
-        row.className = "station-row";
-        row.style.cssText = `
-          display:grid;
-          grid-template-columns:1.7fr 150px;
-          gap:10px;
-          padding:10px;
-          border-radius:16px;
-          background:rgba(15,23,42,0.4);
-          border:1px solid rgba(148,163,184,0.25);
-          cursor:pointer;
-        `;
+  list.forEach(st => {
+    const row = document.createElement("div");
+    row.className = "station-row";
+    row.style.cssText = `
+      display:grid;
+      grid-template-columns:1.7fr 150px;
+      gap:10px;
+      padding:10px;
+      border-radius:16px;
+      background:rgba(15,23,42,0.4);
+      border:1px solid rgba(148,163,184,0.25);
+      cursor:pointer;
+    `;
 
-        row.addEventListener("click", () => openStationModal(st));
+    row.addEventListener("click", () => openStationModal(st));
 
-        const left = document.createElement("div");
-        left.className = "station-main";
+    const left = document.createElement("div");
+    left.className = "station-main";
 
-        left.innerHTML = `
-  <div class="station-name" style="font-size:13px;font-weight:600;">
-    ${st.name || "Station"}
-  </div>
+    left.innerHTML = `
+      <div class="station-name" style="font-size:13px;font-weight:600;">
+        ${st.name || "Station"}
+      </div>
 
-  <div class="station-meta" style="font-size:11px;opacity:0.8;">
-    ${st.brand ? st.brand + " · " : ""}${st.address || ""} 
-    ${st.city || ""} ${st.state || ""}
-  </div>
+      <div class="station-meta" style="font-size:11px;opacity:0.8;">
+        ${st.brand ? st.brand + " · " : ""}${st.address || ""} 
+        ${st.city || ""} ${st.state || ""}
+      </div>
 
-  <!-- Distance line -->
-  <div class="station-meta-row" style="font-size:11px;opacity:0.85;margin-top:3px;">
-    <span>Distance ${st.distance?.toFixed(1) ?? "?"} mi</span>
-  </div>
+      <div class="station-meta-row" style="font-size:11px;opacity:0.85;margin-top:3px;">
+        <span>Distance ${st.distance?.toFixed(1) ?? "?"} mi</span>
+      </div>
 
-  <!-- Submitted by line -->
-  <div class="station-meta-row" style="font-size:11px;opacity:0.85;margin-top:2px;">
-    <span>Submitted by: ${st.is_home ? "Owner" : "Community"}</span>
-  </div>
-`;
+      <div class="station-meta-row" style="font-size:11px;opacity:0.85;margin-top:2px;">
+        <span>Submitted by: ${st.is_home ? "Owner" : "Community"}</span>
+      </div>
+    `;
 
-        const right = document.createElement("div");
-right.className = "mini-map";
-right.style.cssText = `
-  background:radial-gradient(circle at top,#020617,#000);
-  color:#e5e7eb;
-  padding:8px;
-  border-radius:12px;
-  border:1px solid rgba(148,163,184,0.55);
-  font-size:11px;
-`;
+    const right = document.createElement("div");
+    right.className = "mini-map";
+    right.style.cssText = `
+      background:radial-gradient(circle at top,#020617,#000);
+      color:#e5e7eb;
+      padding:8px;
+      border-radius:12px;
+      border:1px solid rgba(148,163,184,0.55);
+      font-size:11px;
+    `;
 
-const p87 = st.prices_cents?.["87"];
-const p89 = st.prices_cents?.["89"];
-const p93 = st.prices_cents?.["93"];
-const pd  = st.prices_cents?.["diesel"];
+    const p87 = st.prices_cents?.["87"];
+    const p89 = st.prices_cents?.["89"];
+    const p93 = st.prices_cents?.["93"];
+    const pd  = st.prices_cents?.["diesel"];
 
-right.innerHTML = `
-  <div class="mini-map-row">
-    <span class="price-label price-regular">Regular</span>
-    <span class="price-value price-regular">
-      ${p87 != null ? "$" + dollarsFromCents(p87) : "—"}
-    </span>
-  </div>
+    right.innerHTML = `
+      <div class="mini-map-row">
+        <span class="price-label price-regular">Regular</span>
+        <span class="price-value price-regular">
+          ${p87 != null ? "$" + dollarsFromCents(p87) : "—"}
+        </span>
+      </div>
 
-  <div class="mini-map-row">
-    <span class="price-label price-midgrade">Midgrade</span>
-    <span class="price-value price-midgrade">
-      ${p89 != null ? "$" + dollarsFromCents(p89) : "—"}
-    </span>
-  </div>
+      <div class="mini-map-row">
+        <span class="price-label price-midgrade">Midgrade</span>
+        <span class="price-value price-midgrade">
+          ${p89 != null ? "$" + dollarsFromCents(p89) : "—"}
+        </span>
+      </div>
 
-  <div class="mini-map-row">
-    <span class="price-label price-premium">Premium</span>
-    <span class="price-value price-premium">
-      ${p93 != null ? "$" + dollarsFromCents(p93) : "—"}
-    </span>
-  </div>
+      <div class="mini-map-row">
+        <span class="price-label price-premium">Premium</span>
+        <span class="price-value price-premium">
+          ${p93 != null ? "$" + dollarsFromCents(p93) : "—"}
+        </span>
+      </div>
 
-  <div class="mini-map-row">
-    <span class="price-label price-diesel">Diesel</span>
-    <span class="price-value price-diesel">
-      ${pd != null ? "$" + dollarsFromCents(pd) : "—"}
-    </span>
-  </div>
-`;
+      <div class="mini-map-row">
+        <span class="price-label price-diesel">Diesel</span>
+        <span class="price-value price-diesel">
+          ${pd != null ? "$" + dollarsFromCents(pd) : "—"}
+        </span>
+      </div>
+    `;
 
-        row.appendChild(left);
-        row.appendChild(right);
-        container.appendChild(row);
-      });
+    row.appendChild(left);
+    row.appendChild(right);
+    container.appendChild(row);
+  });
+
+  // 🔹 NEW: update the sidebar “Lowest Regular Nearby” card
+  updateBestPriceCard(list);
+}
+
+function updateBestPriceCard(list) {
+  const card = document.getElementById("best-price-card");
+  if (!card) return;
+
+  // Find the station with the lowest Regular (87) price
+  let best = null;
+
+  list.forEach(station => {
+    const cents = station.prices_cents?.["87"];
+    if (cents != null) {
+      if (!best || cents < best.priceCents) {
+        best = { station, priceCents: cents };
+      }
     }
+  });
+
+  if (!best) {
+    card.innerHTML = `
+      <div class="best-title">Lowest Regular Nearby</div>
+      <div class="best-empty">No stations with owner pricing yet.</div>
+    `;
+    return;
+  }
+
+  const st = best.station;
+  const price = dollarsFromCents(best.priceCents);
+  const name = st.name || "Station";
+  const line2 = `${st.address || ""} ${st.city || ""} ${st.state || ""}`.trim();
+  const distance = st.distance != null ? `${st.distance.toFixed(1)} mi` : "";
+  const mapsQuery = encodeURIComponent(
+    `${name} ${st.address || ""} ${st.city || ""} ${st.state || ""}`.trim()
+  );
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
+
+  card.innerHTML = `
+    <div class="best-title">Lowest Regular Nearby</div>
+    <div class="best-name">${name}</div>
+    ${line2 ? `<div class="best-meta">${line2}</div>` : ""}
+    ${distance ? `<div class="best-distance">Distance ${distance}</div>` : ""}
+    <div class="best-price-row">
+      <span class="best-price-label">Regular</span>
+      <span class="best-price-value">$${price}</span>
+    </div>
+    <a class="best-link" href="${mapsUrl}" target="_blank" rel="noopener">
+      Open in Google Maps →
+    </a>
+  `;
+}
 
 
     /*==============================================================
@@ -1774,7 +1889,19 @@ right.innerHTML = `
     }
 
 
-    window.addEventListener("DOMContentLoaded", async () => {
+        window.addEventListener("DOMContentLoaded", async () => {
+      // Wire up “Center on Shields” button
+      const centerBtn = document.getElementById("btn-center-shields");
+      if (centerBtn) {
+        centerBtn.addEventListener("click", () => {
+          if (TarcartStore.map) {
+            TarcartStore.map.setCenter(SHIELDS_COORDS);
+            TarcartStore.map.setZoom(13);
+          }
+        });
+      }
+
+      // Existing map + data bootstrapping
       waitForGoogleMapsReady(() => {
         TarcartStore.googleReady = true;
         initMap();
