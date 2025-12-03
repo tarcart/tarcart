@@ -755,6 +755,37 @@
               <tbody id="submissions-tbody">
               </tbody>
             </table>
+            <!-- DANGER ZONE: DELETE STATION -->
+            <div class="card-tagline" style="margin-top:16px; font-weight:600;">
+              Danger zone — delete station
+            </div>
+            <p class="card-tagline">
+              Permanently remove a station from the Shields map, list view, and
+              "Submit Gas Prices" dropdown. Home Shields station is protected.
+            </p>
+
+            <div class="control-row" style="display:flex; gap:8px; align-items:center; max-width:380px;">
+              <input
+                id="delete-station-id"
+                class="text-input"
+                type="number"
+                min="1"
+                placeholder="Enter station ID (e.g. 5)"
+                style="flex:1;"
+              />
+              <button
+                id="delete-station-btn"
+                class="secondary-btn"
+                style="border-color:#b91c1c; color:#fecaca;"
+                type="button"
+              >
+                Delete station
+              </button>
+            </div>
+            <p class="card-tagline" style="font-size:11px; opacity:0.8;">
+              This cannot be undone. Any price history remains, but no longer
+              links to the deleted station.
+            </p>
           </section>
 
           <!-- ANALYTICS: PRICE HISTORY SECTION -->
@@ -841,6 +872,9 @@
 
     const navItems = document.querySelectorAll(".nav-item");
     const sections = document.querySelectorAll(".main-section");
+
+    const deleteStationInput = document.getElementById("delete-station-id");
+    const deleteStationBtn = document.getElementById("delete-station-btn");
 
     let adminToken = localStorage.getItem("tarcart-admin-token") || "";
     let currentStatus = "pending";
@@ -1354,6 +1388,96 @@
           "Error loading spread analytics. See console for details.";
         spreadStatus.className = "status-bar err";
       }
+    }
+
+    async function deleteStationFromAdmin() {
+      if (!adminToken) {
+        globalStatus.textContent =
+          "You must be logged in to delete stations.";
+        globalStatus.className = "status-bar err";
+        return;
+      }
+
+      if (!deleteStationInput) {
+        return;
+      }
+
+      const raw = (deleteStationInput.value || "").trim();
+      if (!raw) {
+        globalStatus.textContent = "Enter a station ID to delete.";
+        globalStatus.className = "status-bar err";
+        return;
+      }
+
+      const id = Number(raw);
+      if (!Number.isFinite(id) || id <= 0) {
+        globalStatus.textContent = "Station ID must be a positive number.";
+        globalStatus.className = "status-bar err";
+        return;
+      }
+
+      if (
+        !window.confirm(
+          `Delete station #${id}? This will remove it from the map and the Submit Gas Prices dropdown.`
+        )
+      ) {
+        return;
+      }
+
+      globalStatus.textContent = `Deleting station #${id}…`;
+      globalStatus.className = "status-bar";
+
+      try {
+        const res = await fetch(
+          API_BASE + "/api/admin/stations/" + encodeURIComponent(id),
+          {
+            method: "DELETE",
+            headers: {
+              "x-admin-token": adminToken,
+            },
+          }
+        );
+
+        let data = {};
+        try {
+          data = await res.json();
+        } catch {
+          // ignore JSON parse errors
+        }
+
+        if (res.status === 401) {
+          globalStatus.textContent =
+            "Unauthorized – admin token invalid or expired.";
+          globalStatus.className = "status-bar err";
+          return;
+        }
+
+        if (!res.ok) {
+          globalStatus.textContent =
+            (data && data.error) ||
+            `Failed to delete station. HTTP ${res.status}.`;
+          globalStatus.className = "status-bar err";
+          return;
+        }
+
+        globalStatus.textContent = `Station #${id} deleted. It will no longer appear on the map, list, or price dropdown.`;
+        globalStatus.className = "status-bar ok";
+
+        deleteStationInput.value = "";
+
+        // Refresh analytics/submissions so counts are up to date
+        loadSubmissions(currentStatus);
+        loadSpreadAnalytics();
+      } catch (err) {
+        console.error("Failed to delete station", err);
+        globalStatus.textContent =
+          "Error deleting station. See console for details.";
+        globalStatus.className = "status-bar err";
+      }
+    }
+
+    if (deleteStationBtn) {
+      deleteStationBtn.addEventListener("click", deleteStationFromAdmin);
     }
 
     // Initial loads (chart + spread don't require auth)
