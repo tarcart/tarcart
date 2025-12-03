@@ -223,5 +223,109 @@ router.post(
     }
   }
 );
+// ===========================================================
+// APPROVE / REJECT SUBMISSIONS
+// ===========================================================
+router.post("/api/admin/submissions/:id/:action", requireAdmin, async (req, res) => {
+  const { id, action } = req.params;
+
+  if (action !== "approve" && action !== "reject") {
+    return res.status(400).json({ error: "Unknown action" });
+  }
+
+  // Load the submission row
+  const { rows } = await pool.query(
+    `
+    SELECT *
+    FROM price_submissions
+    WHERE id = $1
+    `,
+    [id]
+  );
+
+  const submission = rows[0];
+  if (!submission) {
+    return res.status(404).json({ error: "Submission not found" });
+  }
+
+  // Handle REJECT
+  if (action === "reject") {
+    await pool.query(
+      `
+      UPDATE price_submissions
+      SET status = 'rejected'
+      WHERE id = $1
+      `,
+      [id]
+    );
+    return res.json({ ok: true });
+  }
+
+  // Handle APPROVE
+  // -------------------------------------------------
+  // If this is a NEW station suggestion (no station_id yet)
+  if (!submission.station_id) {
+    const stationName = submission.station_name;
+    const fullAddress = submission.station_address || "";
+
+    // Attempt to parse address "123 Main St, City, FL 33162"
+    let address = fullAddress;
+    let city = null;
+    let state = null;
+
+    const parts = fullAddress.split(",");
+    if (parts.length >= 2) {
+      address = parts[0].trim();
+      city = parts[1].trim() || null;
+      if (parts.length >= 3) {
+        state = parts[2].trim().split(" ")[0] || null;
+      }
+    }
+
+    // Insert new station
+    const insertRes = await pool.query(
+      `
+      INSERT INTO stations (
+        name,
+        brand,
+        address,
+        city,
+        state,
+        is_home
+      )
+      VALUES ($1, NULL, $2, $3, $4, false)
+      RETURNING id;
+      `,
+      [stationName, address || null, city, state]
+    );
+
+    const newStationId = insertRes.rows[0].id;
+
+    // Link submission to new station + mark approved
+    await pool.query(
+      `
+      UPDATE price_submissions
+      SET station_id = $1,
+          status = 'approved'
+      WHERE id = $2
+      `,
+      [newStationId, id]
+    );
+
+    return res.json({ ok: true, station_id: newStationId });
+  }
+
+  // Existing station → just approve submission
+  await pool.query(
+    `
+    UPDATE price_submissions
+    SET status = 'approved'
+    WHERE id = $1
+    `,
+    [id]
+  );
+
+  return res.json({ ok: true });
+});
 
 export default router;

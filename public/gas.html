@@ -1028,6 +1028,16 @@
           </div>
         </div>
 
+<div class="control-row">
+  <label class="small-caption">Submitted By (optional)</label>
+  <input
+    id="new-station-submitter"
+    class="text-input"
+    type="text"
+    placeholder="Your name or initials"
+  />
+</div>
+
         <div
           class="modal-body-col"
           style="flex: 1; min-width: 220px;"
@@ -1772,16 +1782,25 @@ function updateBestPriceCard(list) {
     document.getElementById("suggest-submit-btn").addEventListener("click", submitSuggestStation);
 
     async function submitSuggestStation() {
-      const payload = {
-        name: document.getElementById("new-station-name").value.trim(),
-        brand: document.getElementById("new-station-brand").value.trim(),
-        notes: document.getElementById("new-station-notes").value.trim(),
-        address: document.getElementById("new-station-address").value.trim(),
-        city: document.getElementById("new-station-city").value.trim(),
-        state: document.getElementById("new-station-state").value.trim(),
-        postal_code: document.getElementById("new-station-zip").value.trim(),
-        source: "gas-web",
-      };
+  const submittedBy = document
+    .getElementById("new-station-submitter")
+    .value
+    .trim();
+
+  const payload = {
+    name: document.getElementById("new-station-name").value.trim(),
+    brand: document.getElementById("new-station-brand").value.trim(),
+    notes: document.getElementById("new-station-notes").value.trim(),
+    address: document.getElementById("new-station-address").value.trim(),
+    city: document.getElementById("new-station-city").value.trim(),
+    state: document.getElementById("new-station-state").value.trim(),
+    postal_code: document.getElementById("new-station-zip").value.trim(),
+    source: "gas-web",
+
+    // NEW: submitted-by info for backend & admin
+    submitted_by: submittedBy || null,
+    submitter_name: submittedBy || null,
+  };
 
       if (!payload.name || !payload.city) {
         showToast("Name + City are required.");
