@@ -764,24 +764,52 @@
               "Submit Gas Prices" dropdown. Home Shields station is protected.
             </p>
 
-            <div class="control-row" style="display:flex; gap:8px; align-items:center; max-width:380px;">
-              <input
-                id="delete-station-id"
-                class="text-input"
-                type="number"
-                min="1"
-                placeholder="Enter station ID (e.g. 5)"
-                style="flex:1;"
-              />
-              <button
-                id="delete-station-btn"
-                class="secondary-btn"
-                style="border-color:#b91c1c; color:#fecaca;"
-                type="button"
-              >
-                Delete station
-              </button>
+            <!-- STATIONS DIRECTORY -->
+            <div style="margin-top:24px;">
+              <div class="card-header-row">
+                <h2>Stations in system</h2>
+              </div>
+              <p class="card-tagline">
+                All stations currently known to Tarcart. Delete will remove
+                the station from the map, list view, and "Submit Gas Prices" dropdown.
+              </p>
+
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Brand</th>
+                    <th>Address</th>
+                    <th>City / State</th>
+                    <th>Home?</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="stations-tbody">
+                  <!-- Filled by JS -->
+                </tbody>
+              </table>
             </div>
+
+            <div class="control-row" style="display:flex; gap:8px; align-items:center; max-width:380px;">
+  <select
+    id="delete-station-select"
+    class="text-input"
+    style="flex:1;"
+  >
+    <option value="">Select a station to delete…</option>
+  </select>
+  <button
+    id="delete-station-btn"
+    class="secondary-btn"
+    style="border-color:#b91c1c; color:#fecaca;"
+    type="button"
+  >
+    Delete station
+  </button>
+</div>
+
             <p class="card-tagline" style="font-size:11px; opacity:0.8;">
               This cannot be undone. Any price history remains, but no longer
               links to the deleted station.
@@ -856,10 +884,11 @@
   </div>
 
   <script>
-    const API_BASE = "https://octopus-app-v54dv.ondigitalocean.app";
+        const API_BASE = "https://octopus-app-v54dv.ondigitalocean.app";
 
     const globalStatus = document.getElementById("global-status");
     const tbody = document.getElementById("submissions-tbody");
+    const stationsTbody = document.getElementById("stations-tbody"); // NEW
     const statusChips = document.querySelectorAll(".status-chip");
 
     const gradeSelect = document.getElementById("grade-select");
@@ -873,8 +902,8 @@
     const navItems = document.querySelectorAll(".nav-item");
     const sections = document.querySelectorAll(".main-section");
 
-    const deleteStationInput = document.getElementById("delete-station-id");
-    const deleteStationBtn = document.getElementById("delete-station-btn");
+    const deleteStationSelect = document.getElementById("delete-station-select");
+const deleteStationBtn = document.getElementById("delete-station-btn");
 
     let adminToken = localStorage.getItem("tarcart-admin-token") || "";
     let currentStatus = "pending";
@@ -1174,7 +1203,114 @@
       }
     }
 
-    
+        // --------- Stations list in Admin ----------
+
+    async function loadStationsForAdmin() {
+      if (!stationsTbody) return;
+
+      stationsTbody.innerHTML = `
+        <tr>
+          <td colspan="7">Loading stations…</td>
+        </tr>
+      `;
+
+      try {
+        const res = await fetch(API_BASE + "/api/stations");
+        if (!res.ok) {
+          stationsTbody.innerHTML = `
+            <tr><td colspan="7">Failed to load stations (HTTP ${res.status}).</td></tr>
+          `;
+          return;
+        }
+
+        const stations = await res.json();
+        renderStationsForAdmin(stations);
+      } catch (err) {
+        console.error("Failed to load stations", err);
+        stationsTbody.innerHTML = `
+          <tr><td colspan="7">Error loading stations.</td></tr>
+        `;
+      }
+    }
+
+    function renderStationsForAdmin(stations) {
+      if (!stationsTbody) return;
+      stationsTbody.innerHTML = "";
+
+      if (!stations || stations.length === 0) {
+        stationsTbody.innerHTML = `
+          <tr><td colspan="7">No stations in the system yet.</td></tr>
+        `;
+        return;
+      }
+
+      stations.forEach((st) => {
+        const tr = document.createElement("tr");
+
+        const isHome = !!st.is_home || st.id === 1; // protect SHIELDS
+        const name = isHome ? "SHIELDS" : (st.name || "Station");
+
+        const tdId = document.createElement("td");
+        tdId.textContent = String(st.id);
+
+        const tdName = document.createElement("td");
+        tdName.textContent = name;
+
+        const tdBrand = document.createElement("td");
+        tdBrand.textContent = st.brand || "—";
+
+        const tdAddr = document.createElement("td");
+        tdAddr.textContent = st.address || "—";
+
+        const tdCityState = document.createElement("td");
+        tdCityState.textContent =
+          `${st.city || ""} ${st.state || ""}`.trim() || "—";
+
+        const tdHome = document.createElement("td");
+        tdHome.textContent = isHome ? "Yes" : "No";
+
+        const tdActions = document.createElement("td");
+
+        if (isHome) {
+          tdActions.textContent = "Protected";
+        } else {
+          const delBtn = document.createElement("button");
+          delBtn.textContent = "Delete";
+          delBtn.className = "btn btn-reject"; // reuse red styling
+          delBtn.type = "button";
+          delBtn.addEventListener("click", () => {
+            deleteStationFromRow(st.id, name);
+          });
+          tdActions.appendChild(delBtn);
+        }
+
+        tr.appendChild(tdId);
+        tr.appendChild(tdName);
+        tr.appendChild(tdBrand);
+        tr.appendChild(tdAddr);
+        tr.appendChild(tdCityState);
+        tr.appendChild(tdHome);
+        tr.appendChild(tdActions);
+
+        stationsTbody.appendChild(tr);
+      });
+    }
+
+    function deleteStationFromRow(id, name) {
+      // Reuse the existing deleteStationInput + deleteStationFromAdmin()
+      if (deleteStationInput) {
+        deleteStationInput.value = String(id);
+      }
+      // Show a clearer confirm that includes name
+      if (
+        window.confirm(
+          `Delete ${name || "station"} (ID ${id})?\n\nThis will remove it from the map, list view, and Submit Gas Prices dropdown.`
+        )
+      ) {
+        deleteStationFromAdmin();
+      }
+    }
+
     // Status filter click handlers
     statusChips.forEach((chip) => {
       chip.addEventListener("click", () => {
@@ -1390,110 +1526,154 @@
       }
     }
 
+async function loadDeleteStationDropdown() {
+  if (!deleteStationSelect) return;
+
+  // Start with placeholder
+  deleteStationSelect.innerHTML = "";
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = "Select a station to delete…";
+  deleteStationSelect.appendChild(placeholder);
+
+  try {
+    const res = await fetch(API_BASE + "/api/stations");
+    if (!res.ok) {
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = `Failed to load stations (HTTP ${res.status})`;
+      deleteStationSelect.appendChild(opt);
+      return;
+    }
+
+    const stations = await res.json();
+
+    stations.forEach((st) => {
+      // Never allow deleting SHIELDS / home
+      const isHome = !!st.is_home || st.id === 1;
+      if (isHome) return;
+
+      const opt = document.createElement("option");
+      opt.value = String(st.id);
+
+      const street = st.address ? String(st.address).split(",")[0].trim() : "";
+      const name = st.name || "Station";
+
+      opt.textContent = street
+        ? `#${st.id} — ${name} — ${street}`
+        : `#${st.id} — ${name}`;
+
+      deleteStationSelect.appendChild(opt);
+    });
+  } catch (err) {
+    console.error("Failed to load stations for delete dropdown", err);
+    const opt = document.createElement("option");
+    opt.value = "";
+    opt.textContent = "Error loading stations";
+    deleteStationSelect.appendChild(opt);
+  }
+}
+
     async function deleteStationFromAdmin() {
-      if (!adminToken) {
-        globalStatus.textContent =
-          "You must be logged in to delete stations.";
-        globalStatus.className = "status-bar err";
-        return;
-      }
+  if (!adminToken) {
+    globalStatus.textContent = "You must be logged in to delete stations.";
+    globalStatus.className = "status-bar err";
+    return;
+  }
 
-      if (!deleteStationInput) {
-        return;
-      }
+  if (!deleteStationSelect) return;
 
-      const raw = (deleteStationInput.value || "").trim();
-      if (!raw) {
-        globalStatus.textContent = "Enter a station ID to delete.";
-        globalStatus.className = "status-bar err";
-        return;
-      }
+  const raw = (deleteStationSelect.value || "").trim();
+  if (!raw) {
+    globalStatus.textContent = "Select a station to delete.";
+    globalStatus.className = "status-bar err";
+    return;
+  }
 
-      const id = Number(raw);
-      if (!Number.isFinite(id) || id <= 0) {
-        globalStatus.textContent = "Station ID must be a positive number.";
-        globalStatus.className = "status-bar err";
-        return;
-      }
+  const id = Number(raw);
+  if (!Number.isFinite(id) || id <= 0) {
+    globalStatus.textContent = "Invalid station selection.";
+    globalStatus.className = "status-bar err";
+    return;
+  }
 
-      if (
-        !window.confirm(
-          `Delete station #${id}? This will remove it from the map and the Submit Gas Prices dropdown.`
-        )
-      ) {
-        return;
-      }
+  const label =
+    deleteStationSelect.options[deleteStationSelect.selectedIndex]?.textContent ||
+    `station #${id}`;
 
-      globalStatus.textContent = `Deleting station #${id}…`;
-      globalStatus.className = "status-bar";
+  if (
+    !window.confirm(
+      `Delete ${label}?\n\nThis will remove it from the map, list view, and "Submit Gas Prices" dropdown.`
+    )
+  ) {
+    return;
+  }
 
-      try {
-        const res = await fetch(
-          API_BASE + "/api/admin/stations/" + encodeURIComponent(id),
-          {
-            method: "DELETE",
-            headers: {
-              "x-admin-token": adminToken,
-            },
-          }
-        );
-
-        let data = {};
-        try {
-          data = await res.json();
-        } catch {
-          // ignore JSON parse errors
-        }
-
-        if (res.status === 401) {
-          globalStatus.textContent =
-            "Unauthorized – admin token invalid or expired.";
-          globalStatus.className = "status-bar err";
-          return;
-        }
-
-        if (!res.ok) {
-          globalStatus.textContent =
-            (data && data.error) ||
-            `Failed to delete station. HTTP ${res.status}.`;
-          globalStatus.className = "status-bar err";
-          return;
-        }
-
-        globalStatus.textContent = `Station #${id} deleted. It will no longer appear on the map, list, or price dropdown.`;
-        globalStatus.className = "status-bar ok";
-
-        deleteStationInput.value = "";
-
-        // Refresh analytics/submissions so counts are up to date
-        loadSubmissions(currentStatus);
-        loadSpreadAnalytics();
-      } catch (err) {
-        console.error("Failed to delete station", err);
-        globalStatus.textContent =
-          "Error deleting station. See console for details.";
-        globalStatus.className = "status-bar err";
-      }
-    }
-
-    if (deleteStationBtn) {
-      deleteStationBtn.addEventListener("click", deleteStationFromAdmin);
-    }
-
-    // Initial loads (chart + spread don't require auth)
-    loadAnalytics();
-    loadSpreadAnalytics();
-
-    // Auto-load submissions if session exists
-    // Auto-load submissions if session exists
-if (adminToken) {
-  globalStatus.textContent = "Welcome back — admin session active.";
-  globalStatus.className = "status-bar ok";
-  loadSubmissions("pending");
-} else {
-  // No token: hide error, but also hide submissions since user isn't logged in
-  globalStatus.textContent = "";
+  globalStatus.textContent = `Deleting station #${id}…`;
   globalStatus.className = "status-bar";
+
+  try {
+    const res = await fetch(
+      API_BASE + "/api/admin/stations/" + encodeURIComponent(id),
+      {
+        method: "DELETE",
+        headers: {
+          "x-admin-token": adminToken,
+        },
+      }
+    );
+
+    let data = {};
+    try {
+      data = await res.json();
+    } catch {
+      // ignore JSON parse errors
+    }
+
+    if (res.status === 401) {
+      globalStatus.textContent =
+        "Unauthorized – admin token invalid or expired.";
+      globalStatus.className = "status-bar err";
+      return;
+    }
+
+    if (!res.ok) {
+      globalStatus.textContent =
+        (data && data.error) ||
+        `Failed to delete station. HTTP ${res.status}.`;
+      globalStatus.className = "status-bar err";
+      return;
+    }
+
+    globalStatus.textContent = `Station #${id} deleted. It will no longer appear on the map, list, or price dropdown.`;
+    globalStatus.className = "status-bar ok";
+
+    // Reset dropdown and reload options
+    deleteStationSelect.selectedIndex = 0;
+    await loadDeleteStationDropdown();
+
+    // Optional: refresh other admin views
+    if (typeof loadSubmissions === "function") {
+      loadSubmissions(currentStatus || "pending");
+    }
+    if (typeof loadSpreadAnalytics === "function") {
+      loadSpreadAnalytics();
+    }
+  } catch (err) {
+    console.error("Failed to delete station", err);
+    globalStatus.textContent =
+      "Error deleting station. See console for details.";
+    globalStatus.className = "status-bar err";
+  }
+}
+
+if (deleteStationBtn) {
+  deleteStationBtn.addEventListener("click", deleteStationFromAdmin);
+}
+
+// Load stations into delete dropdown when admin session is active
+if (adminToken) {
+  loadDeleteStationDropdown();
 }
 
   </script>
