@@ -143,51 +143,57 @@
       margin-bottom: 6px;
     }
 
-    .sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;        /* cleaner spacing */
-  margin-top: 8px;  /* pushes navigation group lower */
-}
+        .sidebar-nav {
+      margin-top: 28px;           /* pushes the buttons down */
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
     .nav-item {
-      width: 100%;
-      text-align: left;
       border-radius: 999px;
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--muted);
+      border: 1px solid rgba(15, 23, 42, 0.7);
+      background: #020617;
+      color: #e5e7eb;
+      padding: 7px 12px;
       font-size: 0.82rem;
-      padding: 7px 11px;
+      text-align: left;
+      cursor: pointer;
       display: flex;
       align-items: center;
       gap: 8px;
-      cursor: pointer;
-      transition: background 0.12s ease, border-color 0.12s ease,
-        color 0.12s ease, transform 0.08s ease;
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.9);
+      transition: background 0.15s ease,
+                  box-shadow 0.15s ease,
+                  transform 0.05s ease;
+    }
+
+    .nav-item:hover {
+      background: #0b1120;
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 1);
+    }
+
+    .nav-item:active {
+      transform: translateY(0);
+      box-shadow: none;
     }
 
     .nav-item-dot {
       width: 7px;
       height: 7px;
       border-radius: 999px;
-      background: rgba(148, 163, 184, 0.8);
-    }
-
-    .nav-item:hover {
-      background: rgba(249, 250, 251, 0.9);
-      border-color: rgba(209, 213, 219, 0.9);
-      transform: translateY(-0.5px);
+      background: rgba(248, 250, 252, 0.45);
     }
 
     .nav-item.active {
-      background: var(--accent-soft);
-      border-color: rgba(99, 102, 241, 0.9);
-      color: #312e81;
+      background: #f97316;
+      color: #0b1120;
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.9);
     }
 
     .nav-item.active .nav-item-dot {
-      background: var(--accent);
+      background: #0f172a;
     }
 
     .sidebar-footer {
@@ -400,10 +406,10 @@
 
     .card {
       background: var(--card);
-      border-radius: 20px;
+      border-radius: 18px;
       border: 1px solid rgba(229, 231, 235, 0.95);
       padding: 14px 16px;
-      box-shadow: 0 12px 30px rgba(148, 163, 184, 0.25);
+      box-shadow: 0 22px 60px rgba(15, 23, 42, 0.55);
       margin-bottom: 14px;
     }
 
@@ -620,6 +626,10 @@
       display: block;
     }
 
+    .danger-zone {
+      display: none;
+    }
+
     @media (max-width: 880px) {
       .app-layout {
         flex-direction: column;
@@ -792,40 +802,23 @@
               </table>
             </div>
 
-            <!-- DANGER ZONE: DELETE STATION -->
-            <div class="card-tagline" style="margin-top:20px; font-weight:600;">
-              Danger zone — delete station
-            </div>
-            <p class="card-tagline">
-              Permanently remove a station from the Shields map, list view, and
-              "Submit Gas Prices" dropdown. Home Shields station is protected.
-            </p>
+                      <p class="card-tagline danger-zone">
+            Danger zone — delete station
+          </p>
+          <p class="card-tagline danger-zone">
+            Permanently remove a station from the Shields map, list view, and "Submit Gas Prices" dropdown. Home Shields station is protected.
+          </p>
 
-            <div
-              class="control-row"
-              style="display:flex; gap:8px; align-items:center; max-width:380px;"
-            >
-              <select
-                id="delete-station-select"
-                class="text-input"
-                style="flex:1;"
-              >
-                <option value="">Select a station to delete…</option>
-              </select>
-              <button
-                id="delete-station-btn"
-                class="secondary-btn"
-                style="border-color:#b91c1c; color:#fecaca;"
-                type="button"
-              >
-                Delete station
-              </button>
-            </div>
+          <div class="control-row danger-zone">
+            <select id="delete-station-select">
+              <!-- options populated from JS -->
+            </select>
+            <button id="delete-station-btn" class="btn-ghost">Delete station</button>
+          </div>
 
-            <p class="card-tagline" style="font-size:11px; opacity:0.8;">
-              This cannot be undone. Any price history remains, but no longer
-              links to the deleted station.
-            </p>
+          <p class="card-tagline small danger-zone">
+            This cannot be undone. Any price history remains, but no longer links to the deleted station.
+          </p>
           </section>
 
 
