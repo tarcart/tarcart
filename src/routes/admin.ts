@@ -429,4 +429,84 @@ router.delete("/stations/:id", async (req: Request, res: Response) => {
   }
 });
 
+// ===========================================================
+// DELETE A STATION (admin only)
+// ===========================================================
+router.delete("/api/admin/stations/:id", requireAdmin, async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+
+  if (!Number.isFinite(id)) {
+    return res.status(400).json({ error: "Invalid station id" });
+  }
+
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    // Lock station row
+    const stationResult = await client.query(
+      `
+      SELECT id, is_home
+      FROM stations
+      WHERE id = $1
+      FOR UPDATE
+      `,
+      [id]
+    );
+
+    if (stationResult.rowCount === 0) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ error: "Station not found" });
+    }
+
+    const station = stationResult.rows[0];
+
+    // Protect home Shields
+    if (station.is_home) {
+      await client.query("ROLLBACK");
+      return res
+        .status(400)
+        .json({ error: "Cannot delete the home Shields station." });
+    }
+
+    // Remove any station_prices rows
+    await client.query(
+      `
+      DELETE FROM station_prices
+      WHERE station_id = $1
+      `,
+      [id]
+    );
+
+    // Keep submission history but detach it
+    await client.query(
+      `
+      UPDATE price_submissions
+      SET station_id = NULL
+      WHERE station_id = $1
+      `,
+      [id]
+    );
+
+    // Delete station itself
+    await client.query(
+      `
+      DELETE FROM stations
+      WHERE id = $1
+      `,
+      [id]
+    );
+
+    await client.query("COMMIT");
+    return res.json({ ok: true, deletedStationId: id });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error deleting station", err);
+    return res.status(500).json({ error: "Failed to delete station" });
+  } finally {
+    client.release();
+  }
+});
+
 export default router;
