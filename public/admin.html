@@ -1676,14 +1676,25 @@ async function loadDeleteStationDropdown() {
   }
 }
 
-if (deleteStationBtn) {
-  deleteStationBtn.addEventListener("click", deleteStationFromAdmin);
-}
-
-// Load stations + delete dropdown when admin session is active
 if (adminToken) {
+  // Nice little “you’re logged in” message
+  globalStatus.textContent = "Welcome back — admin session active.";
+  globalStatus.className = "status-bar ok";
+
+  // 1) Pending submissions on first load
+  loadSubmissions("pending");
+
+  // 2) Analytics panels
+  loadAnalytics();
+  loadSpreadAnalytics();
+
+  // 3) Stations table + delete dropdown
   loadDeleteStationDropdown();
   loadStationsForAdmin();
+} else {
+  // Not logged in: keep the status bar quiet
+  globalStatus.textContent = "";
+  globalStatus.className = "status-bar";
 }
 
   </script>
